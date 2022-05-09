@@ -1,0 +1,72 @@
+@model Repaso_Net.Models.Curso
+
+@{   
+    Layout = "_Layout";
+    
+}
+
+<div class="container">
+        <br>
+        <div class="row">
+            <div class="col-sm-6">
+                <img class="rounded"
+                    src="data:image/png;base64,@Model.fileBase64"
+                    width="500" />
+            </div>
+
+<<<<<<< HEAD
+            <div class="col-sm-6">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h4>Curso</h4>
+                        <p>@Model.nombre</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <h4>Docente</h4>
+                        <p>Ing. @Model.usuario.nombres @Model.usuario.apellidos</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h4>Descripción</h4>
+                            <p>@Model.informacion</p>
+                        </div>
+                    </div>
+                </div><br>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h4>Fecha de Inicio</h4>
+                        <p>@Model.fechaInicio.ToString("dd/MM/yyyy")</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <h4>Fecha de Fin</h4>
+                        <p>@Model.fechaFin.ToString("dd/MM/yyyy")</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h4>Horario</h4>
+                        <p>@Model.horario</p>
+                        <h4>Cupos:</h4>
+                        <p>@Model.cupo participantes</p>
+                        <h4>Precio</h4>
+                        <p>S/. @Model.precio</p>
+                    </div>
+                    
+                </div>
+=======
+        <div>
+   
+              <div class="card-body">
+                <h5 class="card-title">@Model.nombre</h5>
+                <p class="card-text"><strong>Fecha Inicio:</strong> @Model.fechaInicio.ToString("dd/MM/yyyy")</p>
+                <p class="card-text"><strong>Fecha Fin:</strong> @Model.fechaFin.ToString("dd/MM/yyyy")</p>
+                <p class="card-text"><strong>Precio:</strong> S/ @Model.precio</p>
+                <p class="card-text"><strong>Cupos:</strong> @Model.cupo cupos disponibles</p>
+                <p class="card-text"><strong>Descripción:</strong> @Model.informacion</p>
+>>>>>>> 6d890bfd37eedff05791b51202931e8a57a23934
+                <a href="#" class="btn btn-primary">Inscribirse</a>
+            </div>
+        </div>
+
+    
+    </div>

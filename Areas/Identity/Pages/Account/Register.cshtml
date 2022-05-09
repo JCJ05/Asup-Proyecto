@@ -1,0 +1,183 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registrar Usuario";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="container">
+<div class="">
+    <div class="">
+        <form id="formulario" class=" row g-2" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+   
+              <div class="col-12 form-group">
+                <label asp-for="Input.identificacion"></label>
+                <input id="dni" asp-for="Input.identificacion" class="form-control" minlength="8" onkeypress="return valideKey(event);" onblur="verificarDni()"  autocomplete="off" onpaste="return false"/>
+                <span asp-validation-for="Input.identificacion" class="text-danger"></span>
+                <span id="validacion" class="text-success"></span>
+                <span id="error" class="text-error"></span>
+            </div>
+
+             <div class="col-6 form-group">
+                <label asp-for="Input.nombres"></label>
+                <input id = "nombre" asp-for="Input.nombres" class="form-control" />
+                <span asp-validation-for="Input.nombres" class="text-danger"></span>
+            </div>
+            <div class="col-6 form-group">
+                <label asp-for="Input.apellidos"></label>
+                <input id="apellido"  asp-for="Input.apellidos" class="form-control" />
+                <span asp-validation-for="Input.apellidos" class="text-danger"></span>
+            </div>
+           
+            <div class="col-6 form-group">
+                <label asp-for="Input.direccion"></label>
+                <input asp-for="Input.direccion" class="form-control" />
+                <span asp-validation-for="Input.direccion" class="text-danger"></span>
+            </div>
+            <div class="col-6 form-group">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" class="form-control" />
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="col-6 form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="col-6 form-group">
+                <label asp-for="Input.ConfirmPassword"></label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button disabled id="btnRegistrar" type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+    </div>
+    
+</div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+
+        let cont = 0;
+
+        window.addEventListener('load', function () {
+            
+           document.getElementById('nombre').disabled = true;
+            document.getElementById('apellido').disabled = true;
+
+        });
+
+        document.querySelector('#formulario').addEventListener('submit' , () => {
+
+                document.getElementById('nombre').disabled = false;
+                document.getElementById('apellido').disabled = false;
+               
+        });
+
+          document.querySelector('#dni').addEventListener('input', function(e) {
+                
+                const dni = e.target.value;
+                
+                if(dni.length == 8){
+                    verificarDni();
+                }
+              
+          });
+
+		function valideKey(evt){
+
+			var code = (evt.which) ? evt.which : evt.keyCode;
+            
+			
+			if(code>=48 && code<=57) { 
+                
+                 const dni = document.getElementById('dni').value;   
+                 cont = dni.length;
+            
+                if(cont>=8){
+
+                    return false;
+
+                }
+
+			  return true;
+
+			} else{       
+
+			  return false;
+
+			}
+		}
+
+        function verificarDni(){
+
+        
+           const dni = document.getElementById('dni').value;
+           const token = '18ac37a746ac4281d5857ddf4f655684725d86748852c16cd04d6e7f14145d00';
+           const validacion = document.getElementById('validacion');
+           const error = document.getElementById('error');
+           const btn = document.getElementById('btnRegistrar');
+           const nombre = document.getElementById('nombre');
+           const apellido = document.getElementById('apellido');
+           
+
+           if(dni){
+
+               console.log(dni.length , dni);
+              
+              if(dni.length == 8){
+
+                  
+                 
+                 const url = `https://apiperu.dev/api/dni/${dni}`;
+
+                 fetch(url , {
+                     method: 'GET',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'Authorization': 'Bearer ' + token,
+                     }
+                 })
+                    .then(response => response.json())
+                    .then(result => {
+                         
+                        console.log(result);
+                        const {success , data} = result;
+                        const {nombres , apellido_paterno , apellido_materno} = data;
+                        
+                        if(success){
+                          
+                            error.innerHTML = '';
+                            validacion.innerHTML = 'DNI validado';
+                            nombre.value = nombres;
+                            apellido.value = apellido_paterno + ' ' + apellido_materno;
+                            btn.disabled = false;
+                            
+
+                        }else {
+                            
+                            validacion.innerHTML = '';
+                            error.innerHTML = 'DNI no validado';
+                            btn.disabled = true;
+                            
+                        }
+ 
+                    })
+
+              }
+
+           }
+           
+
+        }
+
+	</script>
+}

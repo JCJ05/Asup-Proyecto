@@ -1,0 +1,58 @@
+@page
+@model Repaso_Net.Areas.Identity.Pages.Account.RegisterConfirmationModel
+
+@{
+    ViewData["Title"] = "Confirmar Correo";
+}
+
+<h1>@ViewData["Title"]</h1>
+@{
+    if (@Model.DisplayConfirmAccountLink)
+    {
+     <p>
+        Para poder iniciar sesion es necesario que verifiques tu email si no lo haces no podras iniciar sesion <br />, por lo tanto se mando un mensaje a tu correo <span id="correo">@ViewData["email"]</span> <br />
+        espera por lo menos 5 min para volver a enviar el mensaje de confirmacion y no olvides revisar en la carpeta de spam o correos no deseados.
+     </p>
+
+     <button type="button" id="btnEnviar">Volver a enviar mensaje de confirmacion</button>
+
+     <p id="urlConfirm" style="display: none;">@Model.EmailConfirmationUrl</p>
+
+    }
+    else
+    {
+<p>
+        Please check your email to confirm your account.
+        
+</p>
+
+    }
+}
+
+
+@section Scripts {
+  
+  <script text="text/javascript">
+    
+      document.querySelector('#btnEnviar').addEventListener('click', () => {
+           
+          
+          const email = document.querySelector('#correo').textContent.toString();
+          const ruta = document.querySelector('#urlConfirm').textContent.toString();
+          const url = `https://localhost:5001/api/usuarios?email=${email}&url=${ruta}`;
+
+          fetch(url)
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.log(error));
+            
+     
+      });
+      
+
+  </script>
+       
+
+      
+}
+

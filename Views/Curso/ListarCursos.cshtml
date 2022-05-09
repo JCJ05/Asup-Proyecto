@@ -1,0 +1,218 @@
+@model List<Curso>
+@using Microsoft.AspNetCore.Identity
+@using System.Threading.Tasks
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+
+@{   
+    Layout = "_Layout";
+    ViewData["Title"] = "LISTA DE CURSOS";
+    
+}
+
+
+<div class="container mt-5">
+
+ <h1 class="text-center">@ViewData["Tittle"]</h1>
+
+ @if(SignInManager.IsSignedIn(User)){
+
+    Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));
+    var roles = await Task.Run(() => UserManager.GetRolesAsync(myidentity));
+
+    if(roles.Contains("administrador")){
+        <div class="mt-3">
+   
+          <a class="btn btn-warning" asp-controller="Curso" asp-action="RegistrarCurso">Nueva Curso</a>
+
+        </div>
+    }
+
+ 
+ }
+
+  <h3>Filtros:</h3>
+
+  <div class="container mb-5">
+    
+      <div style="display: flex; justify-content: space-between;">
+
+           <div>
+
+                <label>Curso: </label>
+                <input type="text" class="form-control" id="nombre" placeholder="Nombre del curso">
+
+           </div>
+
+              <div>
+    
+                 <label>Desde: </label>
+                 <input type="date" class="form-control" id="fecha">
+
+              </div>
+
+               <div>
+    
+                 <label>Precio: </label>
+                 <input type="number" step="2.5" class="form-control" id="precio">
+
+              </div>
+
+      </div>
+
+  </div>
+
+  
+
+
+   <div id="cartas" class="row">
+    @foreach (var item in Model)
+    {
+    <div class="col-4" style="">
+
+        <div class="card" style="width: 18rem;">
+            <img src="data:image/png;base64,@item.fileBase64" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">@item.nombre</h5>
+                <p class="card-text">@item.informacion</p>
+                <a asp-controller=Curso  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="@item.Id">Detalle</a>
+               @if(SignInManager.IsSignedIn(User)){
+
+                    Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));
+                    var roles = await Task.Run(() => UserManager.GetRolesAsync(myidentity));
+
+                   if(roles.Contains("administrador")){
+                      <a class="btn btn-info" asp-controller="Curso" asp-action="EditarCurso" asp-route-id="@item.Id">Editar</a>
+                      <a class="btn btn-danger" asp-controller="Curso" asp-action="EliminarCurso" asp-route-id="@item.Id" >Eliminar</a>  
+                   }
+
+                
+                }
+                
+            </div>
+        </div>
+
+    </div>
+    }
+</div>
+
+
+@section Scripts {
+
+    <script text="text/javascript">
+      
+       const nombre = document.getElementById("nombre");
+       const fecha = document.getElementById("fecha");
+       const precio = document.getElementById("precio");
+       const cursos = new Array();
+
+       nombre.addEventListener('input' , (e) => {
+            
+             callApi();
+       })
+
+       precio.addEventListener('input' , (e) => {
+            
+             callApi();
+
+       });
+
+       fecha.addEventListener('change' , (e) => {
+                
+            callApi();
+    
+      });
+
+     const callApi = () => {
+          
+        
+            const data = {
+                nombre: nombre.value? nombre.value : 'null',
+                fecha: fecha.value? fecha.value : 'no',
+                precio: precio.value? precio.value : 0
+            }
+
+            console.log(data);
+
+            const url = `https://localhost:5001/api/filtro?nombre=${data.nombre}&fecha=${data.fecha}&precio=${data.precio}`;
+
+            console.log(url);
+    
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                
+                const {cursosFiltro} = data;
+                console.log(cursosFiltro);
+                mostrarCursos(cursosFiltro);
+            })
+            .catch(error => console.error('Error:', error));
+
+     }
+   
+     const mostrarCursos = (data = []) => {
+            let cards = '';
+            const cartas = document.getElementById('cartas');
+
+            cartas.innerHTML = '';
+
+            if(data.length > 0){
+
+            data.forEach(curso => {
+                
+                const card = `
+                  
+                  <div class="col-4" style="">
+
+                 <div class="card" style="width: 18rem;">
+                 <img src="data:image/png;base64,${curso.fileBase64}" class="card-img-top" alt="...">
+                 <div class="card-body">
+                <h5 class="card-title">${curso.nombre}</h5>
+                <p class="card-text">${curso.informacion}</p>
+                <a asp-controller=Curso  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="${curso.Id}">Detalle</a>
+                @if(SignInManager.IsSignedIn(User)){
+
+                    Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));
+                    var roles = await Task.Run(() => UserManager.GetRolesAsync(myidentity));
+
+                   if(roles.Contains("administrador")){
+                      <a class="btn btn-info" asp-controller="Curso" asp-action="EditarCurso" asp-route-id="${curso.Id}">Editar</a>
+                      <a class="btn btn-danger" asp-controller="Curso" asp-action="EliminarCurso" asp-route-id="${curso.Id}" >Eliminar</a>  
+                   }
+
+                
+                }
+                
+            </div>
+        </div>
+
+    </div>
+                
+                
+                `
+
+                cards += card;
+
+
+            })
+
+            cartas.innerHTML = cards;
+            
+            }else{
+
+                cartas.innerHTML = `<div class="alert alert-danger text-center">No hay cursos con los filtros que buscaste</div>`;
+            }
+
+     }
+
+    </script>
+
+}
+          
+         
+

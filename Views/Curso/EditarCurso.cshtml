@@ -1,0 +1,100 @@
+@model Curso
+
+
+@{  
+    Layout = "_Layout";
+    List<Usuario> usuarios = new List<Usuario>();
+    Usuario usuario = new Usuario();
+
+    usuarios = ViewBag.items;
+    usuario = ViewBag.item;
+
+    ViewData["Title"] = "Editar Curso";
+   
+
+    
+}
+
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+<form asp-controller="Curso"  asp-action="EditarCurso"   method="post" enctype="multipart/form-data">
+
+    <div class="form-group">
+        <label asp-for="nombre">Nombre del curso</label>
+        <input type="text" asp-for="nombre" class="form-control">
+        <span class="text-danger" asp-validation-for="nombre"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="fechaInicio">Fecha de inicio</label>
+        <input type="date" asp-for="fechaInicio" class="form-control">
+        <span class="text-danger" asp-validation-for="fechaInicio"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="fechaFin">Fecha de fin</label>
+        <input type="date" asp-for="fechaFin" class="form-control">
+        <span class="text-danger" asp-validation-for="fechaFin"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="horario">Horario: </label>
+        <input type="text" asp-for="horario" class="form-control">
+        <span class="text-danger" asp-validation-for="horario"></span>
+    </div>
+
+     <div class="form-group">
+        <label asp-for="cupo">Cupos disponibles: </label>
+        <input type="number" asp-for="cupo" class="form-control">
+        <span class="text-danger" asp-validation-for="cupo"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="informacion">Informacion del curso: </label>
+        <textarea asp-for="informacion" class="form-control"></textarea>
+        <span class="text-danger" asp-validation-for="cupo"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="precio">Precio del curso: </label>
+        <input type="number" asp-for="precio" class="form-control" step="2.5"  pattern="^\d*(\.\d{0,2})?$">
+        <span class="text-danger" asp-validation-for="precio"></span>
+    </div>
+
+      <div class="form-group">
+        <label for="file">Imagen: </label>
+        <input type="file" for="file" name="files" class="form-control" accept="image/png, image/jpg, image/jpeg" >
+    </div>
+
+     <div class="form-group" >
+        <label asp-for="usuario">Profesor: </label>
+         
+         <div class="form-group">
+
+           <select class="form-control" name="profesor">
+
+               <option selected >@usuario.nombres</option>
+
+               @foreach (var item in usuarios)
+               {
+
+                 <option value="@item.Id">@item.nombres</option>
+                   
+               }
+
+           </select>
+
+            <span class="text-danger" asp-validation-for="usuario"></span>
+
+       </div>
+        
+    </div>
+
+    <button class="btn btn-primary">Actulizar Curso</button>
+</form>
+
+
+
+
+

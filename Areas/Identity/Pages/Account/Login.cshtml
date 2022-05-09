@@ -1,0 +1,40 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesion";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+
+    <br>  
+    <center><img src="https://i.pinimg.com/474x/bc/df/1d/bcdf1dc5c5f2d1b6665f7f3ea8740ec7.jpg" width="200" height="200"></center>
+    <br>
+    <br>
+
+    <center><div class="login-page">
+        <div class="form">
+          <form class="login-form" id="account" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div><input asp-for="Input.Email" placeholder="Correo Electrónico"/></div>
+              <span asp-validation-for="Input.Email" class="text-danger"></span>
+            <br>
+            <div><input asp-for="Input.Password"  placeholder="Contraseña"/></div>
+              <span asp-validation-for="Input.Password" class="text-danger"></span>
+            <br>
+            <button type="submit" class="btn btn-warning">INICIAR SESIÓN</button>
+            
+          </form>
+            <br>
+            <p class="message">¿No estás registrado aún? <a asp-area="Identity" asp-page="/Account/Register">¡REGÍSTRATE AHORA!</a></p>
+        </div>
+      </div></center>
+
+    <br>
+
+    
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
