@@ -43,7 +43,7 @@ namespace Repaso_Net.Controllers.Rest
                         int puerto = 587;
 
                         string GmailUser = "soyelputoamocabron23@gmail.com";
-                        string GmailPass = "revels321";
+                        string GmailPass = "";
 
                         string receptor = email;
 

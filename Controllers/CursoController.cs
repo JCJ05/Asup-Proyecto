@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Repaso_Net.Models;
 using Repaso_Net.Data;
 
+
 namespace Repaso_Net.Controllers {
    
     public class CursoController : Controller {
@@ -92,8 +93,11 @@ namespace Repaso_Net.Controllers {
 
             }
 
+        
+
              var usuarios = _userManager.GetUsersInRoleAsync("profesor").Result;
              ViewBag.items = usuarios;
+
             return View(curso);
 
         }
