@@ -13,7 +13,7 @@
 
 <div class="container mt-5">
 
- <h1 class="text-center">@ViewData["Tittle"]</h1>
+ <h1 class="text-center">@ViewData["Title"]</h1>
 
  @if(SignInManager.IsSignedIn(User)){
 
@@ -23,7 +23,7 @@
     if(roles.Contains("administrador")){
         <div class="mt-3">
    
-          <a class="btn btn-warning" asp-controller="Curso" asp-action="RegistrarCurso">Nueva Curso</a>
+          <a class="btn btn-warning" asp-controller="Curso" asp-action="RegistrarCurso">Nuevo Curso</a>
 
         </div>
     }

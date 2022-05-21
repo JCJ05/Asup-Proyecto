@@ -1,0 +1,72 @@
+@model Pago
+
+@using Microsoft.AspNetCore.Identity
+@using System.Threading.Tasks
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+
+<div class="container">
+
+        <h1>REALIZAR PAGO</h1>
+            
+            <div>
+
+                <table border="0" align="center">
+                    <tr>
+                        <th>PAGO POR TRANSFERENCIA</th>
+                    </tr>
+                    <tr>
+                        <td>- TITULAR DE LA CUENTA: JUAN CARLOS NORABUENA CASTAÑEDA</td>
+                    </tr>
+                    <tr>
+                        <td>- NÚMERO DE CUENTA CORRIENTE (BCP - SOLES): 19145678912345</td>
+                    </tr>
+                    <tr>
+                        <td>- NÚMERO DE CUENTA INTERBANCARIO (CCI): 00219114567891234558</td>
+                    </tr>
+                    <tr>
+                        <td>- YAPE: 956234567</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            - CODIGO QR: <br>
+                            <img src="~/img/QR.png" width="400" height="400">
+                        </td>
+                    </tr>
+                </table>
+
+
+            </div>
+
+
+            <form method="post" asp-controller="Pago" asp-action="Transferencia">
+            
+            <div class="form-group">
+                <label>MÉTODO DE PAGO</label>
+                <select class="form-control">
+                    <option>- Seleccione -</option>
+                    <option>Transferencia bancaria</option>
+                    <option>Transferencia interbancaria</option>
+                    <option>Yape</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>BANCO DE ORIGEN</label> <!-- Si es CCI -->
+                <input type="text" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label>NOMBRE DEL TITULAR COMO APARECE EN LA CUENTA: </label>
+                <input class="form-control" type="text" required/>
+            </div>
+            <div class="form-group">
+                <label>INGRESE LA CAPTURA DEL COMPROBANTE DE PAGO</label>
+                <input class="form-control" type="file" accept="image/*" required/>
+            </div>
+            
+            <div class="form-group">
+                <button type="button" class="btn btn-info">PAGAR</button>
+            </div>
+            
+            </form>
+
+    </div>

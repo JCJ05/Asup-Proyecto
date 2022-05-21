@@ -231,7 +231,6 @@ namespace Repaso_Net.Controllers {
 
             return RedirectToAction("ListarCursos");
        }
-       
         
     }
 
