@@ -27,6 +27,7 @@ namespace Repaso_Net.Controllers.Rest
 
             if(nombre != "null" && precio == 0 && fecha == "no"){
                 cursos = cursos.FindAll(x => x.nombre.ToLower().Contains(nombre.ToLower()));
+        
             }else if(nombre == "null" && precio != 0 && fecha == "no"){
                 cursos = cursos.FindAll(x => x.precio == precio);
             }else if(nombre == "null" && precio == 0 && fecha != "no"){

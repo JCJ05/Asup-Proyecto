@@ -1,0 +1,90 @@
+ <center><div><h1>REALIZAR PAGO</h1></div></center>
+    <br>
+      <div class="container text-center col-7" style="border:1px solid #ccc; padding:2% 4%;">
+          <form>
+          <div class="mb-3 row">
+            <label for="staticEmail" class="col-sm-4 col-form-label">N° de Tarjeta</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="staticEmail">
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="staticEmail" class="col-sm-4 col-form-label">Tipo de Tarjeta</label>
+            <div class="col-sm-8">
+              <select class="form-select" aria-label="Default select example">
+                <option selected>Seleccione el Tipo de Tarjeta</option>
+                <option value="BBVA">BBVA</option>
+                <option value="BCP">BCP</option>
+                <option value="Interbank">Interbank</option>
+                <option value="Scotiabank">Scotiabank</option>
+              </select>
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <div class="col-sm-6 text-center ">
+              <label for="staticEmail" class="col-form-label ">Fecha de Caducidad</label>
+                <input type="text" class="form-control" id="staticEmail" placeholder="MM/AA">
+            </div>
+            <div class="col-sm-6 text-center">
+              <label for="staticEmail" class="col-form-label ">Código de Seguridad</label>
+                <input type="text" class="form-control" id="staticEmail" placeholder="CVV">
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="staticEmail" class="col-sm-4 col-form-label">Nombre del propietario</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="staticEmail">
+            </div>
+          </div>
+          <div class="mb-3 row">
+            <label for="staticEmail" class="col-sm-4 col-form-label">Monto a pagar</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="monto"  disabled="disabled">
+            </div>
+          </div>
+          <button id="pagar" class="btn btn-primary">Pagar</button>
+          </form>
+      </div>
+    
+
+
+@section Scripts {
+  
+  <script text="text/javascript">
+
+    const pagar = document.querySelector('#pagar');
+
+      pagar.addEventListener('click', function(e){
+      e.preventDefault();
+      
+      const url = "https://localhost:5001/api/pago";
+
+      const allCourses = localStorage.getItem('carrito');
+
+      fetch(url, {
+        method: 'POST',
+        body: allCourses,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+            if(res.ok){
+              
+              alert('Pago realizado con exito');
+              localStorage.removeItem('carrito');
+                
+                 setTimeout(function(){
+                  window.location.href = "https://localhost:5001/";
+                }, 2000);
+               
+            }
+        })
+       
+
+    });
+
+  </script>
+
+}
+   

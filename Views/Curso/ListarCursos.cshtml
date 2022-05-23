@@ -76,6 +76,7 @@
                 <h5 class="card-title">@item.nombre</h5>
                 <p class="card-text">@item.informacion</p>
                 <a asp-controller=Curso  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="@item.Id">Detalle</a>
+                <a  class="btn btn-success" onclick="verId(@item.Id);">Agregar al Carrito</a>
                @if(SignInManager.IsSignedIn(User)){
 
                     Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));
@@ -106,12 +107,12 @@
        const precio = document.getElementById("precio");
        const cursos = new Array();
 
-       nombre.addEventListener('input' , (e) => {
+       nombre.addEventListener('keyup' , (e) => {
             
              callApi();
        })
 
-       precio.addEventListener('input' , (e) => {
+       precio.addEventListener('keyup' , (e) => {
             
              callApi();
 

@@ -15,5 +15,9 @@ namespace Repaso_Net.Data
 
           public DbSet<Repaso_Net.Models.Usuario> DataUsuarios {get; set; }
           public DbSet<Repaso_Net.Models.Curso> DataCursos {get; set; }
+
+          public DbSet<Repaso_Net.Models.Pago> DataPagos {get; set; }
+
+          public DbSet<Repaso_Net.Models.PagoCurso> DataPagoCursos {get; set; }
     }
 }

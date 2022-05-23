@@ -1,0 +1,115 @@
+
+
+  <div style="display: none;" class="alert alert-danger mens">
+      <p class="text-center" id="ninguno"></p>
+  </div>
+
+  <div>
+    
+      <div id="contenido">
+         
+
+      </div>
+
+      <a href="https://localhost:5001/Pago/RealizarPago" class="btn btn-info">Pagar con tarjeta</a>
+
+  </div>
+
+  @section Scripts {
+  
+     <script text="text/javascript">
+           
+           let carras = [];
+
+
+           document.addEventListener('DOMContentLoaded', () => {
+
+               const texto = document.querySelector("#ninguno");
+               const mens = document.querySelector(".mens");
+  
+               carras = JSON.parse(localStorage.getItem('carrito'));
+               console.log(carras);
+
+                if(carras.length == 0){
+                     
+                     mens.style.display = "block";
+                     texto.textContent = 'No hay ningun producto en el carrito por favor agregue uno para proceder con la compra';
+
+                }else {
+
+                    mens.style.display = "none";
+                    mostrarElementos(carras);
+                }
+                
+
+
+           })  
+
+           function mostrarElementos(carro) {
+             
+               const content = document.querySelector("#contenido");
+               content.innerHTML = '';
+               let contenido = '';
+               let curso = '';
+               let precio = 0.0;
+
+               if(carro.length > 0){
+
+               
+
+               carro.forEach(course => {
+                  
+                    precio+= parseFloat(course.precio);
+
+                   curso = `
+                     
+                     <img src="data:image/png;base64,${course.fileBase64}" width="100" />
+                    <div>
+                            <h3>
+                                ${course.nombre}
+                            </h3>
+                            <p>$./${course.precio}</p>
+                            <p>${course.informacion}</p>
+                    </div>
+                   
+                   <br />
+                   
+                   `
+                   
+
+                     contenido += curso;
+
+               })
+
+               contenido += `
+                   
+                   <p>Total: ${precio}</p>
+
+                   
+                   <a class="btn btn-success">Pagar con efectivo o transferencia bancaria</a>
+                
+
+               `
+
+               
+               content.innerHTML = contenido;
+               localStorage.setItem('total', JSON.stringify(precio));
+
+               
+
+
+               }else {
+
+                   const texto = document.querySelector("#ninguno");
+                   const mens = document.querySelector(".mens");
+
+                     mens.style.display = "block";
+                     texto.textContent = 'No hay ningun producto en el carrito por favor agregue uno para proceder con la compra';
+
+               }
+           }
+
+
+     </script>
+
+  }
