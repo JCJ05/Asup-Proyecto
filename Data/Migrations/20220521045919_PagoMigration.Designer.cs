@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repaso_Net.Data;
@@ -9,9 +10,10 @@ using Repaso_Net.Data;
 namespace Repaso_Net.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220521045919_PagoMigration")]
+    partial class PagoMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,57 +281,18 @@ namespace Repaso_Net.Data.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-<<<<<<< HEAD
-=======
                     b.Property<byte[]>("archivo")
                         .HasColumnType("bytea");
 
                     b.Property<string>("banco")
                         .HasColumnType("text");
 
->>>>>>> 6c7563f838572b214bab6c220bb12742b1c2cd44
                     b.Property<string>("estado")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("fechaPago")
                         .HasColumnType("timestamp without time zone");
 
-<<<<<<< HEAD
-                    b.Property<decimal>("monto")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("usuarioId")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("usuarioId");
-
-                    b.ToTable("DataPagos");
-                });
-
-            modelBuilder.Entity("Repaso_Net.Models.PagoCurso", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("cursoId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("pagoId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("cursoId");
-
-                    b.HasIndex("pagoId");
-
-                    b.ToTable("DataPagoCursos");
-=======
                     b.Property<string>("fileBase64")
                         .HasColumnType("text");
 
@@ -353,7 +316,6 @@ namespace Repaso_Net.Data.Migrations
                     b.HasIndex("usuarioId");
 
                     b.ToTable("DataPagos");
->>>>>>> 6c7563f838572b214bab6c220bb12742b1c2cd44
                 });
 
             modelBuilder.Entity("Repaso_Net.Models.Usuario", b =>
@@ -443,24 +405,6 @@ namespace Repaso_Net.Data.Migrations
 
                     b.Navigation("usuario");
                 });
-<<<<<<< HEAD
-
-            modelBuilder.Entity("Repaso_Net.Models.PagoCurso", b =>
-                {
-                    b.HasOne("Repaso_Net.Models.Curso", "curso")
-                        .WithMany()
-                        .HasForeignKey("cursoId");
-
-                    b.HasOne("Repaso_Net.Models.Pago", "pago")
-                        .WithMany()
-                        .HasForeignKey("pagoId");
-
-                    b.Navigation("curso");
-
-                    b.Navigation("pago");
-                });
-=======
->>>>>>> 6c7563f838572b214bab6c220bb12742b1c2cd44
 #pragma warning restore 612, 618
         }
     }
