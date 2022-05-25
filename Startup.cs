@@ -13,6 +13,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 using Repaso_Net.Models;
 
 namespace Repaso_Net
@@ -38,6 +40,9 @@ namespace Repaso_Net
             services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+             services.AddSingleton(typeof(IConverter),
+             new SynchronizedConverter(new PdfTools()));
             services.AddControllersWithViews();
         }
 

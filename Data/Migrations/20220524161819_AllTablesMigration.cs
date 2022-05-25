@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Repaso_Net.Data.Migrations
 {
-    public partial class UserModifyMigration : Migration
+    public partial class AllTablesMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -30,7 +30,7 @@ namespace Repaso_Net.Data.Migrations
                     Discriminator = table.Column<string>(type: "text", nullable: false),
                     nombres = table.Column<string>(type: "text", nullable: true),
                     apellidos = table.Column<string>(type: "text", nullable: true),
-                    identificacion = table.Column<int>(type: "integer", nullable: true),
+                    identificacion = table.Column<string>(type: "text", nullable: true),
                     direccion = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -158,6 +158,138 @@ namespace Repaso_Net.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "t_curso",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    nombre = table.Column<string>(type: "text", nullable: true),
+                    fechaInicio = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    fechaFin = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    horario = table.Column<string>(type: "text", nullable: true),
+                    cupo = table.Column<int>(type: "integer", nullable: false),
+                    usuarioId = table.Column<string>(type: "text", nullable: true),
+                    informacion = table.Column<string>(type: "text", nullable: true),
+                    precio = table.Column<decimal>(type: "numeric", nullable: false),
+                    nombrefile = table.Column<string>(type: "text", nullable: true),
+                    fileBase64 = table.Column<string>(type: "text", nullable: true),
+                    archivo = table.Column<byte[]>(type: "bytea", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_t_curso", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_t_curso_AspNetUsers_usuarioId",
+                        column: x => x.usuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "t_pago",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    fechaPago = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    monto = table.Column<decimal>(type: "numeric", nullable: false),
+                    usuarioId = table.Column<string>(type: "text", nullable: true),
+                    NombreTarjeta = table.Column<string>(type: "text", nullable: true),
+                    modalidad = table.Column<string>(type: "text", nullable: true),
+                    nombreArchivo = table.Column<string>(type: "text", nullable: true),
+                    fileVoucher = table.Column<string>(type: "text", nullable: true),
+                    voucher = table.Column<byte[]>(type: "bytea", nullable: true),
+                    Status = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_t_pago", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_t_pago_AspNetUsers_usuarioId",
+                        column: x => x.usuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "t_carrito",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    usuarioId = table.Column<string>(type: "text", nullable: true),
+                    cursoId = table.Column<int>(type: "integer", nullable: true),
+                    Status = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_t_carrito", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_t_carrito_AspNetUsers_usuarioId",
+                        column: x => x.usuarioId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_t_carrito_t_curso_cursoId",
+                        column: x => x.cursoId,
+                        principalTable: "t_curso",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "t_compra",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserID = table.Column<string>(type: "text", nullable: true),
+                    Total = table.Column<decimal>(type: "numeric", nullable: false),
+                    PagoId = table.Column<int>(type: "integer", nullable: true),
+                    boleta = table.Column<byte[]>(type: "bytea", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_t_compra", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_t_compra_t_pago_PagoId",
+                        column: x => x.PagoId,
+                        principalTable: "t_pago",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "t_detalle_compra",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    cursoId = table.Column<int>(type: "integer", nullable: true),
+                    Precio = table.Column<decimal>(type: "numeric", nullable: false),
+                    compraId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_t_detalle_compra", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_t_detalle_compra_t_compra_compraId",
+                        column: x => x.compraId,
+                        principalTable: "t_compra",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_t_detalle_compra_t_curso_cursoId",
+                        column: x => x.cursoId,
+                        principalTable: "t_curso",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -194,6 +326,41 @@ namespace Repaso_Net.Data.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_carrito_cursoId",
+                table: "t_carrito",
+                column: "cursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_carrito_usuarioId",
+                table: "t_carrito",
+                column: "usuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_compra_PagoId",
+                table: "t_compra",
+                column: "PagoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_curso_usuarioId",
+                table: "t_curso",
+                column: "usuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_detalle_compra_compraId",
+                table: "t_detalle_compra",
+                column: "compraId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_detalle_compra_cursoId",
+                table: "t_detalle_compra",
+                column: "cursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_pago_usuarioId",
+                table: "t_pago",
+                column: "usuarioId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -214,7 +381,22 @@ namespace Repaso_Net.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "t_carrito");
+
+            migrationBuilder.DropTable(
+                name: "t_detalle_compra");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "t_compra");
+
+            migrationBuilder.DropTable(
+                name: "t_curso");
+
+            migrationBuilder.DropTable(
+                name: "t_pago");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -3,75 +3,207 @@
 
 // Write your JavaScript code.
 
+const carrito = document.querySelector('#carrito');
+const lista = document.querySelector("#lista-cursos");
+const contenedor = document.querySelector('#body');
+
 let articulosCarrito = [];
 
-function verId(id){
-      
-
-    var url = `https://localhost:5001/api/carrito?id=${id}`;
-
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-
-        const {course} = data;
-        console.log(course);
-       
-
-       const ver = articulosCarrito.find(prod => prod.id === course.id);
-
-      if(ver == null){
-
-        articulosCarrito = [...articulosCarrito , course];
-       
-      }
-
-      carritoHtml();
-
-    })
-    .catch(error => console.log(error));
-
-}
-
- const carrito = document.querySelector('#carrito');
- const lista = document.querySelector("#lista-cursos");
- const contenedor = document.querySelector('#body');
- 
- 
- 
 
  cargarEventListeners();
  function cargarEventListeners(){
 
     document.addEventListener('DOMContentLoaded' , () => {
-    
-        articulosCarrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        carritoHtml();
-
-         const url = window.location.href;
-
-        if(url == 'https://localhost:5001/Pago/RealizarPago'){
-             
-            if(articulosCarrito.length == 0){
-                window.location.href = 'https://localhost:5001/Carro/MostrarItems';
-                
-            }
-
-            const monto = document.getElementById('monto');
-            monto.value = localStorage.getItem('total');
-        }
-
        
+        callApiListItems();
 
     });
   
     
     carrito.addEventListener('click' , eliminarCurso);
+
+ }
+
+ async function verId(id){
+      
+     const mensaje = await callApiReviewProduct(id);
+     console.log(mensaje);
+     
+      if(mensaje == ""){
+
+        errorSweetAlert('Lo siento...' , 'Debes iniciar sesion para agreagar un curso al carrito');
+
+      }else if(mensaje == "El curso ya esta en el carrito"){
+
+        errorSweetAlert('Lo siento...' , 'El curso que quieres añadir ya esta en tu carrito de compras');
+
+      }else if(mensaje == "Curso agregado al carrito"){
+
+         Swal.fire({
+            icon: 'success',
+            title: 'El curso fue agregado al carrito satisfactoriamente',
+          })
+
+          callApiListItems();
+
+
+      }else if(mensaje == "Curso no encontrado"){
+
+        errorSweetAlert('Lo siento...' , 'El curso que quieres añadir no existe');
+
+      }else if(mensaje == "El usuario ya esta inscrito en el curso"){
+
+        errorSweetAlert('Lo siento...' , 'El curso no se puede añadir al carrito porque ya estas inscrito en el curso');
+
+      }else {
+           
+        errorSweetAlert('Opps...' , 'Algo salio mal vuelve a intentarlo mas tarde');
+
+      }
+
+    
+}
+
+function consultDelete(id){
+  
+    Swal.fire({
+        title: 'Estas seguro de eliminar?',
+        text: "Recuerda que se va a eliminar de forma permanente!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, eliminar!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+            eliminarProforma(id);
+
+        }
+      })
+
+}
+
+async function eliminarProforma(id){
+  
+     const mensaje = await callApiDeleteProforma(id);
+
+        if(mensaje == "Curso eliminado del carrito"){
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'El curso fue eliminado del carrito satisfactoriamente',
+                })
+    
+                callApiListItems();
+               
+                setTimeout(() => {
+                     
+                    location.reload();
+                    
+                }, 1000);
+    
+        }else if(mensaje == "Curso no encontrado"){
+                                    
+                errorSweetAlert('Lo siento...' , 'El curso que quieres eliminar no existe');
+            
+        }else if(mensaje == ""){
+
+            errorSweetAlert('Lo siento...' , 'Debes iniciar sesion para eliminar un curso del carrito');
+
+        }else {
+
+            errorSweetAlert('Opps...' , 'Algo salio mal vuelve a intentarlo mas tarde');
+
+        }
+
+}
+
+async function callApiDeleteProforma(id){
+
+    const url = `https://localhost:5001/api/carrito?id=${id}`;
+    let mensaje = "";
+
+    const response = await fetch(url , {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if(response.ok){
+
+        data = await response.json()
+        const {course} = data;
+        mensaje = course;
+
+    }else {
+
+        console.error('Error en la peticion');
+
+    }
+
+    return mensaje;
+
+}
+
+function errorSweetAlert(titulo , texto){
+  
+    Swal.fire({
+        icon: 'error',
+        title: `${titulo}`,
+        text: `${texto}`
+      })
+
+}
+
+ async function callApiReviewProduct(id){
+    
+    let mensaje = "";
+    var url = `https://localhost:5001/api/carrito?id=${id}`;
+
+    const response = await fetch(url , {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if(response.ok){
+
+        data = await response.json()
+        const {course} = data;
+        mensaje = course;
+
+    }else {
+
+        console.error(response.status);
+
+    }
+
+    return mensaje;
+ }
+
+ function callApiListItems(){
+      
+    const urlFetch = 'https://localhost:5001/api/carrito';
+    fetch(urlFetch)
+       .then(response => {
+           
+            if(response.ok){
+                return response.json();
+            }else {
+                   vaciarCarrito();
+                   throw new Error('Error en la peticion');   
+            }
+
+       })
+       .then(data => {
+               
+               articulosCarrito = data;
+               carritoHtml();
+       })
+       .catch(error => console.log(error));
 
  }
 
@@ -101,19 +233,11 @@ function verId(id){
 
  }
 
-
-
-
- // Lee el contenido del html y extrae la informacion del curso //
-
-
-
-  // Muestra el carrito en el html //
-
+  
   function carritoHtml(){
     
     limpiarCarrito();
-    articulosCarrito.forEach(curso => {
+    articulosCarrito.forEach(proforma => {
       
         const row = document.createElement('tr');
     
@@ -121,33 +245,28 @@ function verId(id){
 
             <td>
               
-            <img src="data:image/png;base64,${curso.fileBase64}" width="100" >
+            <img src="data:image/png;base64,${proforma.curso.fileBase64}" width="100" >
              
             </td>
            
              <td>
               
-                 ${curso.nombre}
+                 ${proforma.curso.nombre}
 
              </td>
 
              <td>
               
-                 ${curso.precio}
+                 ${proforma.curso.precio}
 
              </td>
 
              <td>
               
-               ${curso.fechaInicio}
+               ${proforma.curso.fechaInicio}
 
          </td>
 
-         <td>
-              
-             <a class="borrar-curso" data-id="${curso.id}">x</a>
-
-         </td>
 
          `;
     
@@ -155,13 +274,47 @@ function verId(id){
    
     })
 
-    // Sincronizar con el storage //
-
-        localStorage.setItem('carrito' , JSON.stringify(articulosCarrito));    
-
+   
   }
 
   function limpiarCarrito(){
 
       contenedor.innerHTML = '';
+  }
+
+  function consultarModalidad(){
+      
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-warning'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Elige tu metodo de pago',
+        text: "Puedes pagar con tu tarjeta de credito o con una transferencia desde tu cuenta bancaria o el agente mas cercano",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'PAGAR CON TARJETA',
+        cancelButtonText: 'PAGAR CON TRANSFERENCIA',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+            
+            window.location.href = 'https://localhost:5001/Pago/IndexPago';
+
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            'Cancelled',
+            'Your imaginary file is safe :)',
+            'error'
+          )
+        }
+      })
+
   }

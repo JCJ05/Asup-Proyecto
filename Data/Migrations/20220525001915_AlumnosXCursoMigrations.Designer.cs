@@ -10,8 +10,8 @@ using Repaso_Net.Data;
 namespace Repaso_Net.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220521045919_PagoMigration")]
-    partial class PagoMigration
+    [Migration("20220525001915_AlumnosXCursoMigrations")]
+    partial class AlumnosXCursoMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -225,6 +225,33 @@ namespace Repaso_Net.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Repaso_Net.Models.Compra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("PagoId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("UserID")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("boleta")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PagoId");
+
+                    b.ToTable("t_compra");
+                });
+
             modelBuilder.Entity("Repaso_Net.Models.Curso", b =>
                 {
                     b.Property<int>("Id")
@@ -270,7 +297,59 @@ namespace Repaso_Net.Data.Migrations
 
                     b.HasIndex("usuarioId");
 
-                    b.ToTable("cursos");
+                    b.ToTable("t_curso");
+                });
+
+            modelBuilder.Entity("Repaso_Net.Models.CursoAlumno", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int?>("CursoId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("fechaMatricula")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("usuarioId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CursoId");
+
+                    b.HasIndex("usuarioId");
+
+                    b.ToTable("t_curso_alumno");
+                });
+
+            modelBuilder.Entity("Repaso_Net.Models.DetalleCompra", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<decimal>("Precio")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("compraId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("cursoId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("compraId");
+
+                    b.HasIndex("cursoId");
+
+                    b.ToTable("t_detalle_compra");
                 });
 
             modelBuilder.Entity("Repaso_Net.Models.Pago", b =>
@@ -281,41 +360,64 @@ namespace Repaso_Net.Data.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<byte[]>("archivo")
-                        .HasColumnType("bytea");
-
-                    b.Property<string>("banco")
+                    b.Property<string>("NombreTarjeta")
                         .HasColumnType("text");
 
-                    b.Property<string>("estado")
+                    b.Property<string>("Status")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("fechaPago")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("fileBase64")
+                    b.Property<string>("fileVoucher")
                         .HasColumnType("text");
 
-                    b.Property<string>("metodoPago")
+                    b.Property<string>("modalidad")
                         .HasColumnType("text");
 
-                    b.Property<double>("monto")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("monto")
+                        .HasColumnType("numeric");
 
-                    b.Property<string>("nombreCuenta")
+                    b.Property<string>("nombreArchivo")
                         .HasColumnType("text");
 
-                    b.Property<string>("nombrefile")
+                    b.Property<string>("usuarioId")
                         .HasColumnType("text");
+
+                    b.Property<byte[]>("voucher")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("usuarioId");
+
+                    b.ToTable("t_pago");
+                });
+
+            modelBuilder.Entity("Repaso_Net.Models.Proforma", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("cursoId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("usuarioId")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("cursoId");
+
                     b.HasIndex("usuarioId");
 
-                    b.ToTable("DataPagos");
+                    b.ToTable("t_carrito");
                 });
 
             modelBuilder.Entity("Repaso_Net.Models.Usuario", b =>
@@ -388,6 +490,15 @@ namespace Repaso_Net.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Repaso_Net.Models.Compra", b =>
+                {
+                    b.HasOne("Repaso_Net.Models.Pago", "Pago")
+                        .WithMany()
+                        .HasForeignKey("PagoId");
+
+                    b.Navigation("Pago");
+                });
+
             modelBuilder.Entity("Repaso_Net.Models.Curso", b =>
                 {
                     b.HasOne("Repaso_Net.Models.Usuario", "usuario")
@@ -397,11 +508,56 @@ namespace Repaso_Net.Data.Migrations
                     b.Navigation("usuario");
                 });
 
+            modelBuilder.Entity("Repaso_Net.Models.CursoAlumno", b =>
+                {
+                    b.HasOne("Repaso_Net.Models.Curso", "Curso")
+                        .WithMany()
+                        .HasForeignKey("CursoId");
+
+                    b.HasOne("Repaso_Net.Models.Usuario", "usuario")
+                        .WithMany()
+                        .HasForeignKey("usuarioId");
+
+                    b.Navigation("Curso");
+
+                    b.Navigation("usuario");
+                });
+
+            modelBuilder.Entity("Repaso_Net.Models.DetalleCompra", b =>
+                {
+                    b.HasOne("Repaso_Net.Models.Compra", "compra")
+                        .WithMany()
+                        .HasForeignKey("compraId");
+
+                    b.HasOne("Repaso_Net.Models.Curso", "curso")
+                        .WithMany()
+                        .HasForeignKey("cursoId");
+
+                    b.Navigation("compra");
+
+                    b.Navigation("curso");
+                });
+
             modelBuilder.Entity("Repaso_Net.Models.Pago", b =>
                 {
                     b.HasOne("Repaso_Net.Models.Usuario", "usuario")
                         .WithMany()
                         .HasForeignKey("usuarioId");
+
+                    b.Navigation("usuario");
+                });
+
+            modelBuilder.Entity("Repaso_Net.Models.Proforma", b =>
+                {
+                    b.HasOne("Repaso_Net.Models.Curso", "curso")
+                        .WithMany()
+                        .HasForeignKey("cursoId");
+
+                    b.HasOne("Repaso_Net.Models.Usuario", "usuario")
+                        .WithMany()
+                        .HasForeignKey("usuarioId");
+
+                    b.Navigation("curso");
 
                     b.Navigation("usuario");
                 });

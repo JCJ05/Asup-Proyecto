@@ -47,13 +47,13 @@ namespace Repaso_Net.Controllers.Rest {
             pago.fechaPago = DateTime.Now;
             pago.usuario = user.Result;
             pago.monto = precio;
-            pago.estado = "Procesado";
+           
   
-            decimal monto = 0;
+           // decimal monto = 0;
 
               _context.DataPagos.Add(pago);
 
-            var cursosPago = new List<PagoCurso>();             
+          /*  var cursosPago = new List<PagoCurso>();             
 
             foreach (var curso in cursos.ToList()) {
                  
@@ -69,7 +69,7 @@ namespace Repaso_Net.Controllers.Rest {
           }
 
             _context.DataPagoCursos.AddRange(cursosPago);
-            _context.SaveChanges();
+            _context.SaveChanges();*/
 
             return Ok();
               
