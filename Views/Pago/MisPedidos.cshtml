@@ -1,0 +1,38 @@
+@model List<Compra>
+
+
+@if(Model.Count == 0){
+
+    
+        <div class="alert alert-info">
+            <strong>No hay compras</strong>
+        </div>
+}
+
+@if(Model.Count > 0){
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Boleta</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model)
+                {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Pago.fechaPago</td>
+                    <td>@item.Total</td>
+                    <td>@Html.ActionLink("Boleta", "DownLoadNormativa" , new { id=item.Id })</td>
+                
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

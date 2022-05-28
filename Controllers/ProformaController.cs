@@ -17,23 +17,37 @@ using Repaso_Net.Data;
 
 namespace Repaso_Net.Controllers {
    
-    public class CarroController : Controller {
+    public class ProformaController : Controller {
 
         private readonly ApplicationDbContext _context;
 
-       
         private readonly ILogger<CursoController> _logger;
 
-        public CarroController(ILogger<CursoController> logger  , ApplicationDbContext context ) {
+        private readonly UserManager<Usuario> _userManager;
+
+        public ProformaController(ILogger<CursoController> logger  , ApplicationDbContext context , UserManager<Usuario> userManager) {
+
             _logger = logger;
             _context = context;
+            _userManager = userManager;
            
         }
 
         [Authorize(Roles = "profesor,alumno")]
         public IActionResult MostrarItems() {
+            
+            var user = _userManager.GetUserAsync(User);
+            var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
+             
+            decimal sueldo = 0;
 
-            return View();
+            foreach(var proforma in proformas) {
+                sueldo += proforma.curso.precio;
+            }
+
+            ViewBag.sueldo = sueldo;
+            
+            return View(proformas);
               
         }
         

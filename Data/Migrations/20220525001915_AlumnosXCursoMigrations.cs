@@ -4,48 +4,52 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Repaso_Net.Data.Migrations
 {
-    public partial class PagoMigration : Migration
+    public partial class AlumnosXCursoMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "DataPagos",
+                name: "t_curso_alumno",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    fechaPago = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    monto = table.Column<double>(type: "double precision", nullable: false),
                     usuarioId = table.Column<string>(type: "text", nullable: true),
-                    estado = table.Column<string>(type: "text", nullable: true),
-                    metodoPago = table.Column<string>(type: "text", nullable: true),
-                    banco = table.Column<string>(type: "text", nullable: true),
-                    nombreCuenta = table.Column<string>(type: "text", nullable: true),
-                    nombrefile = table.Column<string>(type: "text", nullable: true),
-                    fileBase64 = table.Column<string>(type: "text", nullable: true),
-                    archivo = table.Column<byte[]>(type: "bytea", nullable: true)
+                    CursoId = table.Column<int>(type: "integer", nullable: true),
+                    fechaMatricula = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataPagos", x => x.id);
+                    table.PrimaryKey("PK_t_curso_alumno", x => x.id);
                     table.ForeignKey(
-                        name: "FK_DataPagos_AspNetUsers_usuarioId",
+                        name: "FK_t_curso_alumno_AspNetUsers_usuarioId",
                         column: x => x.usuarioId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_t_curso_alumno_t_curso_CursoId",
+                        column: x => x.CursoId,
+                        principalTable: "t_curso",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataPagos_usuarioId",
-                table: "DataPagos",
+                name: "IX_t_curso_alumno_CursoId",
+                table: "t_curso_alumno",
+                column: "CursoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_t_curso_alumno_usuarioId",
+                table: "t_curso_alumno",
                 column: "usuarioId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DataPagos");
+                name: "t_curso_alumno");
         }
     }
 }

@@ -75,7 +75,7 @@
             <div class="card-body">
                 <h5 class="card-title">@item.nombre</h5>
                 <p class="card-text">@item.informacion</p>
-                <a asp-controller=Curso  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="@item.Id">Detalle</a>
+                <a asp-controller="Curso"  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="@item.Id">Detalle</a>
                 <a  class="btn btn-success" onclick="verId(@item.Id);">Agregar al Carrito</a>
                @if(SignInManager.IsSignedIn(User)){
 
@@ -165,6 +165,8 @@
             if(data.length > 0){
 
             data.forEach(curso => {
+
+                console.log(curso);
                 
                 const card = `
                   
@@ -175,15 +177,16 @@
                  <div class="card-body">
                 <h5 class="card-title">${curso.nombre}</h5>
                 <p class="card-text">${curso.informacion}</p>
-                <a asp-controller=Curso  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="${curso.Id}">Detalle</a>
+                <a class="btn btn-primary" href='VerCurso/${curso.id}'>Detalle</a>
+                <a class="btn btn-success" onclick="verId(${curso.id});" >Agregar al Carrito</a>
                 @if(SignInManager.IsSignedIn(User)){
 
                     Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));
                     var roles = await Task.Run(() => UserManager.GetRolesAsync(myidentity));
 
                    if(roles.Contains("administrador")){
-                      <a class="btn btn-info" asp-controller="Curso" asp-action="EditarCurso" asp-route-id="${curso.Id}">Editar</a>
-                      <a class="btn btn-danger" asp-controller="Curso" asp-action="EliminarCurso" asp-route-id="${curso.Id}" >Eliminar</a>  
+                      <a class="btn btn-info" href='EditarCurso/${curso.id}'>Editar</a>
+                      <a class="btn btn-danger" href='EliminarCurso/${curso.id}' >Eliminar</a>  
                    }
 
                 

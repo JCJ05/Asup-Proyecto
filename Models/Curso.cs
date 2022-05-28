@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Repaso_Net.Models
 {
       
-       [Table("cursos")]
+       [Table("t_curso")]
       public class Curso {
     
            
@@ -31,9 +31,9 @@ namespace Repaso_Net.Models
 
         public decimal precio { get; set; }
 
-         public string nombrefile {get; set; }
+        public string nombrefile {get; set; }
 
-         public string fileBase64 {get; set; }
+        public string fileBase64 {get; set; }
 
         public Byte [] archivo {get; set;}
 
