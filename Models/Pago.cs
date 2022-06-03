@@ -46,5 +46,4 @@ namespace Repaso_Net.Models {
 
          public string Status { get; set; }
    }
-
 }
