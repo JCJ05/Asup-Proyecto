@@ -36,6 +36,13 @@
     
       document.querySelector('#btnEnviar').addEventListener('click', () => {
            
+           Swal.fire({
+            title: 'Enviando mensaje de confirmacion',
+            text: 'Espere por favor',
+            onBeforeOpen: () => {
+              Swal.showLoading()
+            }
+            })
           
           const email = document.querySelector('#correo').textContent.toString();
           const ruta = document.querySelector('#urlConfirm').textContent.toString();

@@ -16,7 +16,7 @@
    
               <div class="col-12 form-group">
                 <label asp-for="Input.identificacion"></label>
-                <input id="dni" asp-for="Input.identificacion" class="form-control" minlength="8" onkeypress="return valideKey(event);" onblur="verificarDni()"  autocomplete="off" onpaste="return false"/>
+                <input id="dni" asp-for="Input.identificacion" class="form-control" minlength="8" onkeypress="return valideKey(event);"  autocomplete="off" onpaste="return false"/>
                 <span asp-validation-for="Input.identificacion" class="text-danger"></span>
                 <span id="validacion" class="text-success"></span>
                 <span id="error" class="text-error"></span>
@@ -24,34 +24,34 @@
 
              <div class="col-6 form-group">
                 <label asp-for="Input.nombres"></label>
-                <input id = "nombre" asp-for="Input.nombres" class="form-control" />
+                <input disabled id = "nombre" asp-for="Input.nombres" class="form-control" />
                 <span asp-validation-for="Input.nombres" class="text-danger"></span>
             </div>
             <div class="col-6 form-group">
                 <label asp-for="Input.apellidos"></label>
-                <input id="apellido"  asp-for="Input.apellidos" class="form-control" />
+                <input disabled id="apellido"  asp-for="Input.apellidos" class="form-control" />
                 <span asp-validation-for="Input.apellidos" class="text-danger"></span>
             </div>
            
             <div class="col-6 form-group">
                 <label asp-for="Input.direccion"></label>
-                <input asp-for="Input.direccion" class="form-control" />
+                <input asp-for="Input.direccion" id="direccion" class="form-control" />
                 <span asp-validation-for="Input.direccion" class="text-danger"></span>
             </div>
             <div class="col-6 form-group">
                 <label asp-for="Input.Email"></label>
-                <input asp-for="Input.Email" class="form-control" />
+                <input asp-for="Input.Email" class="form-control" id="email" />
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="col-6 form-group">
                 <label asp-for="Input.Password"></label>
-                <input asp-for="Input.Password" class="form-control" />
+                <input asp-for="Input.Password" class="form-control" id="passwowrd"/>
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <div class="col-6 form-group">
                 <label asp-for="Input.ConfirmPassword"></label>
-                <input asp-for="Input.ConfirmPassword" class="form-control" />
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                <input asp-for="Input.ConfirmPassword" id="confirmPassword" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword"  class="text-danger"></span>
             </div>
             <button disabled id="btnRegistrar" type="submit" class="btn btn-primary">Registrar</button>
         </form>
@@ -65,21 +65,145 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script type="text/javascript">
-
+        
+        const dniValidacion = document.getElementById('dni');
+        const nombreValidacion = document.getElementById('nombre');
+        const apellidoValidacion = document.getElementById('apellido');
+        const direccionValidacion = document.getElementById('direccion');
+        const emailValidacion = document.getElementById('email');
+        const passwowrdValidacion = document.getElementById('passwowrd');
+        const confirmPasswordValidacion = document.getElementById('confirmPassword');
+        const formularioRegistro = document.getElementById('formulario');
         let cont = 0;
+
+        dniValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        nombreValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        apellidoValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        direccionValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        emailValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        passwowrdValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        confirmPasswordValidacion.addEventListener('change'  , () => {
+             
+              habilitarBotonForm();
+        })
+
+        const habilitarBotonForm = () => {
+             
+             console.log(dniValidacion.value , nombreValidacion.value , apellidoValidacion.value , direccionValidacion.value , emailValidacion.value , passwowrdValidacion.value , confirmPasswordValidacion.value);
+              if(dniValidacion.value.length == 8 && nombreValidacion.value != '' && apellidoValidacion.value != '' && direccionValidacion.value != '' && emailValidacion.value != '' && passwowrdValidacion.value != '' && confirmPasswordValidacion.value != ''){
+                        if(passwowrdValidacion.value == confirmPasswordValidacion.value){
+                              
+                              document.getElementById('btnRegistrar').disabled = false;
+
+                        }
+
+              }else {
+
+                document.getElementById('btnRegistrar').disabled = true;
+
+              }
+
+        }
 
         window.addEventListener('load', function () {
             
-           document.getElementById('nombre').disabled = true;
-            document.getElementById('apellido').disabled = true;
+             const dni = document.getElementById('dni');
+             
+             if(dni.value.length == 8){
+                 
+                 verificarDni();
+             }
+
 
         });
 
-        document.querySelector('#formulario').addEventListener('submit' , () => {
+        formularioRegistro.addEventListener('submit' , (e) => {
+                e.preventDefault();
+                let mensajeValidar = '';
+                
+                
+                    if(dniValidacion.value.length == 8 && nombreValidacion.value != '' && apellidoValidacion.value != '' && direccionValidacion.value != '' && emailValidacion.value != '' && passwowrdValidacion.value != '' && confirmPasswordValidacion.value != ''){
+                        if(passwowrd.value == confirmPassword.value){
 
-                document.getElementById('nombre').disabled = false;
-                document.getElementById('apellido').disabled = false;
-               
+                                const url = `https://localhost:5001/api/usuarios?email=${emailValidacion.value}`;
+
+                                fetch(url ,{
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+
+                                    const {mensaje} = data;
+                                    mensajeValidar = mensaje;
+                                })
+                                .catch(error => console.log(error));
+
+                                if(mensajeValidar == 'Email Encontrado'){
+
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'El email ya se encuentra registrado!',
+                                    })                                   
+
+                                }else {
+                                       
+                                      
+                                            
+                                            e.preventDefault();
+                                            nombreValidacion.disabled = false;
+                                            apellidoValidacion.disabled = false;
+                                            formularioRegistro.submit();
+
+                                      
+                        
+                                }
+
+
+                        }else{
+                            
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Las contraseñas no coinciden!',
+                            })
+                        }
+                    }else{
+                       
+                        Swal.fire({
+                            type: 'error',
+                            title: 'Oops...',
+                            text: 'Por favor complete todos los campos',
+                        })
+
+                    }
         });
 
           document.querySelector('#dni').addEventListener('input', function(e) {
@@ -127,6 +251,7 @@
            const btn = document.getElementById('btnRegistrar');
            const nombre = document.getElementById('nombre');
            const apellido = document.getElementById('apellido');
+           let mensajeValidar = '';
            
 
            if(dni){
@@ -150,19 +275,56 @@
                     .then(result => {
                          
                         console.log(result);
-                        const {success , data} = result;
-                        const {nombres , apellido_paterno , apellido_materno} = data;
+                        const {success} = result;
+                        
                         
                         if(success){
-                          
-                            error.innerHTML = '';
-                            validacion.innerHTML = 'DNI validado';
-                            nombre.value = nombres;
-                            apellido.value = apellido_paterno + ' ' + apellido_materno;
-                            btn.disabled = false;
-                            
 
+                             const {data} = result;
+                             const {nombres , apellido_paterno , apellido_materno} = data;
+                            
+                             const url = `https://localhost:5001/api/usuarios?dni=${dniValidacion.value}`;
+                                        fetch(url ,{
+                                            method: 'DELETE',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+
+                                            const {mensaje} = data;
+                                            console.log(mensaje);
+                                            mensajeValidar = mensaje;
+
+                                            if(mensajeValidar == 'DNI encontrado'){
+
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: 'El DNI ya se encuentra registrado!',
+                                            })
+
+                                              dniValidacion.value = '';
+                                              nombreValidacion.value = '';
+                                              apellidoValidacion.value = '';
+                                              validacion.innerHTML = '';
+                                              return;
+                                             }
+                                        })
+                                         
+                                            error.innerHTML = '';
+                                            validacion.innerHTML = 'DNI validado';
+                                            nombre.value = nombres;
+                                            apellido.value = apellido_paterno + ' ' + apellido_materno;
+                            
                         }else {
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'El DNI no es valido!',
+                            })
                             
                             validacion.innerHTML = '';
                             error.innerHTML = 'DNI no validado';

@@ -309,11 +309,9 @@ function errorSweetAlert(titulo , texto){
           /* Read more about handling dismissals below */
           result.dismiss === Swal.DismissReason.cancel
         ) {
-          swalWithBootstrapButtons.fire(
-            'Cancelled',
-            'Your imaginary file is safe :)',
-            'error'
-          )
+            
+            window.location.href = 'https://localhost:5001/Pago/Transferencia';
+
         }
       })
 

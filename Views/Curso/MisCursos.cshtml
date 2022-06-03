@@ -1,0 +1,42 @@
+@model List<CursoAlumno>
+
+
+@if(Model.Count == 0){
+
+    <div class="alert alert-info">
+        <p>No estas inscrito a ningun curso, inscribite a un curso para que puedas acceder a este</p>
+    </div>
+}
+
+@if(Model.Count > 0){
+
+    <div class="alert alert-info">
+        <p class="text-center">Estas inscrito a los siguientes @Model.Count cursos</p>
+    </div>
+
+    <div class="row">
+
+    @foreach (var item in Model)
+    {
+
+          <div class="col-4">
+
+             <div class="card" >
+
+                    <img src="data:image/png;base64,@item.Curso.fileBase64" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Curso.nombre</h5>
+                        <p class="card-text">Profesor: @item.Curso.usuario.nombres</p>
+                        <a class="btn btn-primary" asp-controller="Module" asp-action="verInfoCurso" asp-route-id="@item.Curso.Id">Ir al curso</a>
+                    </div>
+
+             </div>
+
+       </div>
+        
+    }
+      
+     
+
+    </div>
+}

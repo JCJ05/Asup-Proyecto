@@ -1,11 +1,27 @@
-@model Pago
+@{
+ 
+  List<Proforma> proformas = ViewBag.proformas;
+  decimal monto = ViewBag.monto;
 
-@using Microsoft.AspNetCore.Identity
-@using System.Threading.Tasks
-@inject SignInManager<Usuario> SignInManager
-@inject UserManager<Usuario> UserManager
+}
 
-<div class="container">
+@if (proformas.Count == 0)
+{
+
+    <div class="alert alert-danger">
+    
+       <p class="text-center">No tienes ningun curso agregado a tu carrito de compras para poder realizar el pago</p>
+
+  </div>
+  
+}
+
+
+
+@if (proformas.Count > 0)
+{
+
+    <div class="container">
 
         <h1>REALIZAR PAGO</h1>
             
@@ -39,34 +55,186 @@
             </div>
 
 
-            <form method="post" asp-controller="Pago" asp-action="Transferencia">
+            <form id="transferencia" enctype="multipart/form-data">
             
             <div class="form-group">
                 <label>MÉTODO DE PAGO</label>
-                <select class="form-control">
-                    <option>- Seleccione -</option>
-                    <option>Transferencia bancaria</option>
-                    <option>Transferencia interbancaria</option>
-                    <option>Yape</option>
+                <select id="metodo" name="metodoPago" class="form-control">
+                    <option value="" disabled selected>- Seleccione -</option>
+                    <option value="bancaria">Transferencia bancaria</option>
+                    <option value="interbancaria">Transferencia interbancaria</option>
+                    <option value="agente">Deposito a traves de agente</option>
+                    <option value="yape">Yape</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>BANCO DE ORIGEN</label> <!-- Si es CCI -->
-                <input type="text" class="form-control"/>
-            </div>
+           
             <div class="form-group">
                 <label>NOMBRE DEL TITULAR COMO APARECE EN LA CUENTA: </label>
-                <input class="form-control" type="text" required/>
+                <input name="nombre" id="titular" onkeypress="return validarWord(event);" class="form-control" type="text" autocomplete="off" onpaste="return false" required/>
             </div>
             <div class="form-group">
                 <label>INGRESE LA CAPTURA DEL COMPROBANTE DE PAGO</label>
-                <input class="form-control" type="file" accept="image/*" required/>
+                <input id="img" class="form-control" type="file" name="files[]" accept="image/*"  required/>
+            </div>
+
+            <div class="form-group">
+               
+                    <img id="img_preview" class="img-thumbnail" />
+
             </div>
             
             <div class="form-group">
-                <button type="button" class="btn btn-info">PAGAR</button>
+                <button id="btnPagar" type="submit" class="btn btn-info" disabled>Pagar S./@monto</button>
             </div>
             
             </form>
 
     </div>
+
+}
+
+    @section Scripts {
+
+    
+         <script text="text/javascript">
+         
+              const imagenRender = document.getElementById('img');
+              const transferencia = document.getElementById('transferencia');
+              const metodo = document.getElementById('metodo');
+              const titular = document.getElementById('titular');
+
+              metodo.addEventListener('change', (e) => {
+
+                    habilitarBoton();
+            
+              });
+
+              const validarWord = (evt) => {
+
+                    var code = (evt.which) ? evt.which : evt.keyCode;
+
+                    if(code>=48 && code<=57) {
+
+                        return false;
+
+                    }else {
+
+                        return true;
+
+                    }
+                   
+              };
+
+              titular.addEventListener('input', (e) => {
+                   
+                   habilitarBoton();
+    
+              });
+
+               imagenRender.addEventListener('change', (e) => {
+
+                const file = e.target.files[0];
+                const formato = file.type.substring(0, 5);
+                const img = document.getElementById('img_preview');
+                 
+                 if(formato == "image"){
+
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        const dataUrl = e.target.result;
+                        img.src = dataUrl;
+                    }
+
+                    reader.readAsDataURL(file);
+
+                 }else {
+
+                    imagenRender.value = "";
+                    img.src = "";
+
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'El formato de la imagen no es valido',
+                    })
+                 }
+
+                 habilitarBoton();
+
+              });
+
+              const habilitarBoton = () => {
+
+                  const btnPagar = document.getElementById('btnPagar');
+
+                   if(metodo.value != '' && imagenRender.value != '' && titular.value != '')
+                   {
+                            btnPagar.disabled = false;
+
+                   }else {
+                            btnPagar.disabled = true;
+                   }
+                   
+              }
+
+                transferencia.addEventListener('submit', (e) => {
+                    
+                     e.preventDefault();
+
+                     if(metodo.value != '' && imagenRender.value != '' && titular.value != ''){
+                                 
+                            const img = document.querySelector('#img');
+                            const file = img.files[0];
+                            console.log(file);
+                            
+                            if(file){
+
+                                console.log("Existe archivo");
+                            }else {
+                                    console.log("No existe archivo");
+                            }
+
+                            const formData = new FormData();
+                            formData.append('file', file);
+                            formData.append('metodo', metodo.value);
+                            formData.append('titular', titular.value);
+                            
+                            fetch('/Pago/Transferencias' , {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                            })
+                            .catch(error => console.error('Error:', error));
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Pago realizado',
+                                text: 'El pago se subio correctamente, cuando el administrador apruebe su pago se le enviara un correo electronico',
+                            })
+
+                            setTimeout(() => {
+                                window.location.href = '/Pago/MisPedidosPendientes';
+                            }, 3500);
+
+                     }else {
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Debe completar todos los campos',
+                            })
+
+                            btnPagar.disabled = true;
+
+                     }
+    
+                    
+                });
+         
+         </script>
+
+    }

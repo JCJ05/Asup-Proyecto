@@ -1,0 +1,457 @@
+@model Repaso_Net.Models.Curso
+@using Microsoft.AspNetCore.Identity
+@using System.Threading.Tasks
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+
+
+@{
+
+    List<Module> modulos = new List<Module>();
+    List<Seccion> secciones = new List<Seccion>();
+
+    
+    
+    Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));
+    var roles = await Task.Run(() => UserManager.GetRolesAsync(myidentity));
+
+
+    
+    var idSeccion = ViewBag.idSeccion;
+    modulos = ViewBag.modulos;
+    secciones = ViewBag.secciones;
+}
+
+<div style="display: flex;" >
+   
+          <div class="col-4">
+
+             <div class="card" >
+
+                    <img src="data:image/png;base64,@Model.fileBase64" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">@Model.nombre</h5>
+                        <p class="card-text">Horario: @Model.horario</p>
+
+                    @if(modulos.Count > 0){
+
+                        <ul class="card-body">
+                              
+                            @foreach(var item in modulos)
+                            {
+                                <li><a href="/Module/verInfoCurso/@Model.Id?idmodulo=@item.id">@item.nombre</a></li>
+                            }
+
+                        </ul>
+                    }else {
+
+                        <p class="card-text">No hay modulos asignados a este curso</p>
+                    }
+
+                    </div>
+
+             </div>
+
+       </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                              <form enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="titulo" class="col-form-label">Titulo :</label>
+                                    <input type="text" class="form-control" id="titulo">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subtitulo" class="col-form-label">Subtitulo:</label>
+                                    <input type="text" class="form-control" id="subtitulo">
+                                </div>
+                           
+                              <div class="mb-3">
+                                   <label for="link" class="col-form-label">Link de la clase: </label>
+                                    <input type="text" class="form-control" id="link">
+                              </div>
+
+                              <div class="mb-3">
+                                    <label for="archivos" class="col-form-label">Archivos de la semana:</label>
+                                    <input type="file" class="form-control" name="files[]" id="archivos">
+                              </div>
+
+                              <ul id="listaArchivos">
+
+                              </ul>
+                                     
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button id="btnSubmit" type="submit" class="btn btn-primary">Añadir Seccion</button>
+                        </div>
+
+
+                             </form>
+                        
+                        </div>
+                       
+                        </div>
+                    </div>
+              </div>
+         
+     
+
+    <div style="background-color: gray; width: 100%;">
+
+          @if(roles.Contains("profesor")){
+
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal" >Agregar una Seccion</button>
+          
+          }
+
+          @foreach (var item in secciones)
+          {
+              
+               <h3>@item.titulo</h3>
+               <p>@item.subtitulo</p>
+               <a href="@item.linkClase">@item.linkClase</a>
+                <ul>
+                      @foreach(var archivo in item.archivos)
+                      {
+                            <li>@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })</li>
+                           
+                      }
+                </ul>
+
+                @if(roles.Contains("profesor")){
+
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalUpdate" data-bs-whatever="@item.Id">Editar Seccion</button>
+                    <button type="button" class="btn btn-danger" onclick="eliminarSeccion(@item.Id)">Eliminar Seccion</button>
+                  
+                }
+
+                 
+                <hr />
+
+                <br />
+              
+          }
+
+    </div>
+
+</div>
+
+ 
+ <div class="modal fade" id="modalUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                              <form enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="tituloUpdate" class="col-form-label">Titulo :</label>
+                                    <input type="text" class="form-control" id="tituloUpdate">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="subtituloUpdate" class="col-form-label">Subtitulo:</label>
+                                    <input type="text" class="form-control" id="subtituloUpdate">
+                                </div>
+                           
+                              <div class="mb-3">
+                                   <label for="linkUpdate" class="col-form-label">Link de la clase: </label>
+                                    <input type="text" class="form-control" id="linkUpdate">
+                              </div>
+
+                              <div class="mb-3">
+                                    <input id="idSeccion" type="text" disabled  style="display: none;"/>
+                              </div>
+
+                              <div class="mb-3">
+                                    <label for="archivosUpdate" class="col-form-label">Archivos de la semana:</label>
+                                    <input type="file" class="form-control" name="files[]" id="archivosUpdate">
+                              </div>
+
+                              <ul id="listaArchivosUpdate">
+
+                              </ul>
+                                     
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" id="btnUpdateSeccion" class="btn btn-primary">Actualizar Seccion</button>
+                                </div>
+
+
+                             </form>
+                        
+                        </div>
+                       
+                        </div>
+                    </div>
+              </div>
+
+
+@section Scripts {
+
+  <script text="text/javascript">
+
+     const exampleModal = document.getElementById('exampleModal');
+     const form = exampleModal.querySelector('form');
+     const archivos = document.getElementById('archivos');
+
+    
+     let archivosFile = [];
+
+     archivos.addEventListener('change', (e) => {
+        
+        console.log("entre");
+        const listaArchivos = document.getElementById('listaArchivos');
+        listaArchivos.innerHTML = '';
+
+        var file = e.target.files[0];
+        console.log(file);
+         
+         if(file == undefined){
+
+             callForEachArchivos();
+            
+         }else{
+
+        var name = file.name;
+        console.log(archivosFile.length);
+         
+        const verdad = archivosFile.find((item) => {
+        
+             if(item.name == name){
+                 console.log('ya existe');
+                 return true;
+             }
+         });
+
+        
+        if(verdad){
+             
+             Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'El archivo que intentas subir ya existe!',
+              })
+
+        }else{
+            archivosFile.push( file );
+            console.log(archivosFile.length);
+        }
+
+    
+         callForEachArchivos();
+            
+      }
+       
+    });
+
+    const callForEachArchivos = () => {
+         
+          archivosFile.forEach(function(file) {
+            var li = document.createElement('li');
+
+            li.addEventListener('click', (e) => {
+                 e.preventDefault();
+
+                 Swal.fire({
+                    title: '¿Estas seguro que deseas eliminar el archivo?',
+                    text: "No podras revertir esta accion!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, Eliminar!'
+                  }).then((result) => {
+                    if (result.value) {
+                     
+                            
+                        archivosFile = archivosFile.filter(item => {
+                            return item.name != file.name;
+                        });
+
+                         li.remove();
+
+                      Swal.fire(
+                        'Eliminado!',
+                        'El archivo ha sido eliminado.',
+                        'success'
+                      )
+                    }
+                  })
+
+               
+
+            });
+
+
+            li.innerHTML = file.name;
+            li.classList.add('list-group-item' , 'puntero');
+    
+            listaArchivos.appendChild(li);
+        });
+
+    }
+
+     form.addEventListener('submit', (e) => {
+
+        e.preventDefault();
+
+        const btnSubmit = document.getElementById('btnSubmit');
+        btnSubmit.disabled = true;
+
+        const titulo = document.getElementById('titulo').value;
+        const subtitulo = document.getElementById('subtitulo').value;
+        const link = document.getElementById('link').value;
+        const cursoId = @Model.Id;
+        const moduloId = @idSeccion;
+
+        console.log(archivosFile);
+      
+        const formData = new FormData();
+        formData.append('titulo', titulo);
+        formData.append('subtitulo', subtitulo);
+        formData.append('link', link);
+        formData.append('cursoId', cursoId);
+        formData.append('moduloId', moduloId);
+       
+        archivosFile.forEach(function(file) {
+            formData.append('archivos', file);
+        });
+
+       
+        fetch('/Module/saveArchivos' , {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            const {mensaje} = data;
+            if(mensaje){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Exito!',
+                    text: 'Seccion agregada con exito!',
+                  })
+                  .then(() => {
+                    window.location.href = `/Module/verInfoCurso/@Model.Id?idmodulo=@idSeccion`;
+                  });
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Algo salio mal!',
+                  })
+            }
+        })
+
+       
+        
+    });
+
+     exampleModal.addEventListener('show.bs.modal',async event => {
+              
+            await logicalModal(event)
+   
+     })
+
+       const logicalModal = async (event) => {
+    
+        //const button = event.relatedTarget
+        //const idPago = button.getAttribute('data-bs-whatever')
+
+       //const data = await callApiGetVoucher(idPago)
+    
+        const modalTitle = exampleModal.querySelector('.modal-title')
+       // const imagen = document.getElementById('imgVoucher');
+        modalTitle.textContent = "Formulario de la Seccion"
+
+    }
+
+
+      const agregarSeccion = () => {
+               
+          const valores = window.location.search;
+          console.log(valores);
+
+          const urlParams = new URLSearchParams(valores);
+          var producto = urlParams.get('idmodulo');
+           
+          if(producto != null){
+
+              console.log(producto)
+              return producto;
+
+          }else {
+
+                return 0;
+          }
+      }
+
+      function eliminarSeccion(id){
+
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Estas seguro de eliminar ?',
+                text: "Recuerda que una vez eliminado no se puede revertir!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Si , Eliminar!',
+                cancelButtonText: 'No, cancelar!',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.isConfirmed) {
+
+                    callApiEliminarSeccion(id);
+
+                    swalWithBootstrapButtons.fire(
+                    'Eliminado!',
+                    'La seccion a sido eliminada',
+                    'success'
+                    ).then(() => {
+                        window.location.href = `/Module/verInfoCurso/@Model.Id?idmodulo=@idSeccion`;
+                    });
+
+                } else if (
+                    /* Read more about handling dismissals below */
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                    'Cancelado',
+                    'La seccion no se eliminino :)',
+                    'error'
+                    )
+                }
+           })
+
+         
+      }
+
+      const callApiEliminarSeccion = async (id) => {
+        const url = `https://localhost:5001/Module/deleteSeccion?id=${id}`;
+        const response = await fetch(url)
+        const data = await response.json()
+        console.log(data);
+      }
+
+  </script>
+
+  <script src="/js/updateModal.js"></script>
+    
+
+}

@@ -87,6 +87,14 @@ namespace Repaso_Net.Controllers {
                 var profe = _context.DataUsuarios.Find(profesor);
                 curso.usuario = profe;
                 _context.Add(curso);
+               
+                 for(int i = 1 ; i <= 4 ; i++){
+                    var modulo = new Module();
+                    modulo.nombre = "Modulo " + i;
+                    modulo.curso = curso;
+                    _context.Add(modulo);
+                 }
+
                 _context.SaveChanges();
                 
                 return RedirectToAction("ListarCursos");
@@ -230,6 +238,14 @@ namespace Repaso_Net.Controllers {
              _context.SaveChanges();
 
             return RedirectToAction("ListarCursos");
+       }
+
+       public IActionResult MisCursos(){
+
+            var usuario = _userManager.GetUserAsync(User).Result;
+            var cursos = _context.DataCursoAlumnos.Include(e => e.Curso).Include(e => e.Curso.usuario).Where(e => e.usuario.Id == usuario.Id).ToList();
+
+            return View(cursos);
        }
         
     }

@@ -46,16 +46,6 @@ namespace Repaso_Net.Controllers.Rest
            
         }
 
-        /*[HttpGet]
-        public async Task<ActionResult<string>> GetTodoItems(string nombre, string apellido, string identificacion)
-        {
-            var usuarios = _context.Usuario.Where(x => x.nombre.Contains(nombre) && x.apellido.Contains(apellido) && x.identificacion.Contains(identificacion));
-            if (usuarios == null)
-            {
-                return NotFound($"No existe el usuario con el nombre:  '{nombre}'.");
-            }
-
-            return Ok(usuarios);
-        }*/
+    
     }
 }

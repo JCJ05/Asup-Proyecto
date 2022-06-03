@@ -20,6 +20,9 @@ namespace Repaso_Net.Data
           public DbSet<Repaso_Net.Models.Compra> DataCompras {get; set; }
           public DbSet<Repaso_Net.Models.DetalleCompra> DataDetalleCompras {get; set; }
           public DbSet<Repaso_Net.Models.CursoAlumno> DataCursoAlumnos {get; set; }
+          public DbSet<Repaso_Net.Models.Seccion> DataSecciones {get; set; }
+          public DbSet<Repaso_Net.Models.Module> DataModules {get; set; }
+          public DbSet<Repaso_Net.Models.Archivo> DataArchivos {get; set; }
 
     }
 }

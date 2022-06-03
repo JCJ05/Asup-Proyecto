@@ -9,6 +9,8 @@ using MailKit.Net.Smtp;
 using MailKit;
 using MimeKit;
 using Microsoft.AspNetCore.Identity;
+using System;
+using System.Linq;
 
 namespace Repaso_Net.Controllers.Rest
 {   
@@ -24,6 +26,36 @@ namespace Repaso_Net.Controllers.Rest
         {
             _context = context;
             _userManager = userManager;
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<String>> validateEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+               return new JsonResult(new { mensaje = "Email no encontrado" });
+            }
+            else
+            {
+              return new JsonResult(new { mensaje = "Email Encontrado" });
+            }
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult<String>> validateDni(string dni)
+        {
+              var user = await  _context.DataUsuarios.Where(x => x.identificacion == dni).FirstOrDefaultAsync();
+
+                if (user == null)
+                {
+                    return new JsonResult(new { mensaje = "DNI no encontrado" });
+                }
+                else
+                {
+                    return new JsonResult(new { mensaje = "DNI encontrado" });
+                }
+
         }
      
           [HttpGet]

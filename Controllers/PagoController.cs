@@ -58,6 +58,7 @@ namespace Asup_Proyecto.Controllers
             return View();
         }
         
+        
         [Authorize(Roles = "profesor,alumno")]
         [HttpPost]
         public IActionResult IndexPago(Pago pago , string tipoTarjeta){
@@ -87,7 +88,7 @@ namespace Asup_Proyecto.Controllers
 
                    List<DetalleCompra> detalles = new List<DetalleCompra>();
                    List<CursoAlumno> cursoAlumnos = new List<CursoAlumno>();
-
+                   
                      foreach (var proforma in proformas)
                      {
                           DetalleCompra detalle = new DetalleCompra();
@@ -101,7 +102,14 @@ namespace Asup_Proyecto.Controllers
                           cursoAlumno.usuario = user.Result;
                           cursoAlumno.fechaMatricula = DateTime.Now;
 
+
                           proforma.Status = "Realizado";
+
+                          var curso = _context.DataCursos.FirstOrDefault(c => c.Id == proforma.curso.Id);
+                          curso.cupo = curso.cupo - 1;
+                           
+                          _context.Update(curso);
+                          
 
                           detalles.Add(detalle);
                           cursoAlumnos.Add(cursoAlumno);
@@ -149,10 +157,22 @@ namespace Asup_Proyecto.Controllers
             return View(compras);
         }
 
+        [Authorize(Roles = "profesor,alumno")]
+        public IActionResult MisPedidosPendientes()
+        {
+            var user = _userManager.GetUserAsync(User);
+            var pagos = _context.DataPagos.Include(p => p.usuario).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
+
+            return View(pagos);
+
+        }
+
         public byte[] GeneratePdfReport(List<Proforma> proformas)
     {   
 
             var total = proformas.Sum(c => c.curso.precio);
+            var oneProfoma = proformas.FirstOrDefault();
+            var usuario = _context.DataUsuarios.FirstOrDefault(u => u.Id == oneProfoma.usuario.Id);
 
             var cabecera = $@"
             
@@ -240,7 +260,7 @@ namespace Asup_Proyecto.Controllers
             ";
 
             cabecera += footer; 
-            sendBoletaToClient(cabecera);
+            sendBoletaToClient(cabecera , usuario.Email);
 
         
         GlobalSettings globalSettings = new GlobalSettings();
@@ -276,9 +296,8 @@ namespace Asup_Proyecto.Controllers
 
       }
 
-      public void sendBoletaToClient(string html){
+      public void sendBoletaToClient(string html , string email){
        
-         var usuario = _userManager.GetUserAsync(User);
          
          string servidor = "smtp.gmail.com";
          int puerto = 587;
@@ -286,7 +305,7 @@ namespace Asup_Proyecto.Controllers
          string GmailUser = "asupempresas@gmail.com";
          string GmailPass = "revels321";
 
-         string receptor = usuario.Result.Email;
+         string receptor = email;
 
          MimeMessage message = new ();
          message.From.Add(new MailboxAddress("Compra realizada", GmailUser));
@@ -309,11 +328,191 @@ namespace Asup_Proyecto.Controllers
 
       }
 
-        public IActionResult DownLoadNormativa(int id){
+        public IActionResult DownLoadBoleta(int id){
         
            var compra = _context.DataCompras.Find(id);
            return File(compra.boleta, "application/pdf", "boleta.pdf");  
           
+       }
+      
+       [Authorize(Roles = "profesor,alumno")]
+       public IActionResult Transferencia(){
+              
+            var user = _userManager.GetUserAsync(User);
+            var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
+
+            decimal sueldo = 0;
+
+            if(proformas.Count > 0)
+            {
+                foreach (var proforma in proformas)
+                {
+                    sueldo += proforma.curso.precio;
+                }
+            }
+            
+            ViewBag.proformas = proformas;
+            ViewBag.monto = sueldo;
+
+        
+            return View();
+          
+       }
+
+        [Authorize(Roles = "administrador")]
+        public IActionResult Pendientes(){
+           
+           var pagos = _context.DataPagos.Include(p => p.usuario).Where(p => p.Status.Equals("Pendiente")).ToList();
+           return View(pagos);
+        }
+        
+        [HttpGet]
+        public async Task<ActionResult<String>> getVoucher(int id){
+
+            var pagos =  await _context.DataPagos.FindAsync(id);
+            var voucherBase = pagos.fileVoucher;
+            return new JsonResult(new { voucher = voucherBase });
+
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<String>> desaprobarPago(int id){
+
+            var pagos =  await _context.DataPagos.Include(p => p.usuario).Where(p => p.Id == id).FirstOrDefaultAsync();
+            var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == pagos.usuario.Id && p.Status.Equals("Validar")).ToList();
+            pagos.Status = "Desaprobado";
+            _context.Update(pagos);
+
+            foreach (var proforma in proformas)
+            {
+                proforma.Status = "Pendiente";
+            }
+           
+            _context.UpdateRange(proformas);
+
+            string servidor = "smtp.gmail.com";
+            int puerto = 587;
+            
+            string GmailUser = "asupempresas@gmail.com";
+            string GmailPass = "revels321";
+
+            string receptor = pagos.usuario.Email;
+
+            MimeMessage message = new ();
+            message.From.Add(new MailboxAddress("Compra cancelada", GmailUser));
+            message.To.Add(new MailboxAddress( receptor , receptor));
+            message.Subject = "Cancelacion de compra";
+
+            BodyBuilder cuerpo = new ();
+            cuerpo.TextBody = "El pedidio fue cancelado";
+            cuerpo.HtmlBody = " <p>Tu pedido fue cancelado porque la imagen del voucher es una foto no valida o no esta totalmente clara</p>" +
+                              " <p>Puedes generar otra vez tu pedido ya que los cursos que seleccionaste vuelven a estar en tu carrito de compras o puedes comunicar al correo de juan@asup.com para mas informacion</p>";
+            
+            message.Body = cuerpo.ToMessageBody();
+
+            SmtpClient cliente = new ();
+            cliente.CheckCertificateRevocation = false;
+            cliente.Connect(servidor, puerto, MailKit.Security.SecureSocketOptions.StartTls);
+            cliente.Authenticate(GmailUser, GmailPass);
+            cliente.Send(message);
+            cliente.Disconnect(true);
+
+             await _context.SaveChangesAsync();
+
+            return new JsonResult(new { status = "ok" });
+
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<String>> aprobarPago(int id){
+
+            var pagos =  await _context.DataPagos.Include(p => p.usuario).Where(p => p.Id == id).FirstOrDefaultAsync();
+            var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == pagos.usuario.Id && p.Status.Equals("Validar")).ToList();
+            var montototal = proformas.Sum(c => c.curso.precio);
+
+            pagos.Status = "Realizado";
+            _context.Update(pagos);
+
+            var boleta = GeneratePdfReport(proformas);
+
+            Compra compra = new Compra();
+            compra.usuario = _context.DataUsuarios.Find(pagos.usuario.Id);
+            compra.Total = pagos.monto;
+            compra.Pago = pagos;
+            compra.boleta = boleta;
+            _context.Add(compra);
+
+            List<DetalleCompra> detalles = new List<DetalleCompra>();
+            List<CursoAlumno> cursoAlumnos = new List<CursoAlumno>();
+                   
+            foreach (var proforma in proformas)
+            {
+                DetalleCompra detalle = new DetalleCompra();
+                detalle.curso = _context.DataCursos.FirstOrDefault(c => c.Id == proforma.curso.Id);
+                detalle.compra = compra;
+                detalle.Precio = _context.DataCursos.FirstOrDefault(c => c.Id == proforma.curso.Id).precio;
+                          
+
+                CursoAlumno cursoAlumno = new CursoAlumno();
+                cursoAlumno.Curso = _context.DataCursos.FirstOrDefault(c => c.Id == proforma.curso.Id);
+                cursoAlumno.usuario = pagos.usuario;
+                cursoAlumno.fechaMatricula = DateTime.Now;
+
+
+                proforma.Status = "Realizado";
+
+                var curso = _context.DataCursos.FirstOrDefault(c => c.Id == proforma.curso.Id);
+                curso.cupo = curso.cupo - 1;
+                           
+                _context.Update(curso);
+                          
+
+                detalles.Add(detalle);
+                cursoAlumnos.Add(cursoAlumno);
+         }
+
+                _context.AddRange(detalles);
+                _context.AddRange(cursoAlumnos);
+                _context.UpdateRange(proformas);
+
+                _context.SaveChanges();
+
+                return new JsonResult(new { mensaje = "Pago aprobado" });
+        }
+
+       [HttpPost]
+       public async Task<ActionResult<String>> Transferencias([FromForm] IFormFile file , [FromForm] string metodo , [FromForm] string titular){
+        
+             var user = _userManager.GetUserAsync(User);
+             var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
+             var montototal = proformas.Sum(c => c.curso.precio);
+
+             Stream str = file.OpenReadStream();
+             BinaryReader br = new BinaryReader(str);
+             Byte [] fileDet = br.ReadBytes((Int32) str.Length);
+              
+             Pago pago = new Pago();
+             pago.NombreTarjeta = titular;
+             pago.Status = "Pendiente";                   
+             pago.usuario = user.Result;
+             pago.fechaPago = DateTime.Now;
+             pago.modalidad = metodo;
+             pago.monto = montototal; 
+             pago.nombreArchivo = Path.GetFileName(file.FileName);
+             pago.fileVoucher = Convert.ToBase64String(fileDet); 
+
+             _context.Add(pago);
+
+             foreach (var proforma in proformas)
+             {
+                 proforma.Status = "Validar";
+             }          
+            
+            _context.UpdateRange(proformas);
+
+            await _context.SaveChangesAsync();
+            
+            return new JsonResult(new { mensaje = "Pago creado con exito" });
        }
 
     }

@@ -76,7 +76,7 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
         public string Email { get; set; }
 
         [Required(ErrorMessage ="El campo contraseña es requerido")]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "Las contraseñas deben tener una letra mayuscula otra minuscula y un caracter especial", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Contraseña:")]
             public string Password { get; set; }
@@ -141,12 +141,20 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
                     }
                 }
                 foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                {  
+                    if(error.Code == "DuplicateUserName")
+                    {
+                        ModelState.AddModelError(string.Empty, "El correo ya esta registrado");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                   
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            
             return Page();
         }
     }

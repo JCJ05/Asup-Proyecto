@@ -5,11 +5,14 @@
 
     
         <div class="alert alert-info">
-            <strong>No hay compras</strong>
+            <p class="text-center">No hay ninguna compra que hayas realizado hasta el momento o que este aprobada</p>
         </div>
 }
 
 @if(Model.Count > 0){
+
+
+    <h2 class="text-center">Mis pedidos</h2>
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover">
@@ -28,7 +31,7 @@
                     <td>@item.Id</td>
                     <td>@item.Pago.fechaPago</td>
                     <td>@item.Total</td>
-                    <td>@Html.ActionLink("Boleta", "DownLoadNormativa" , new { id=item.Id })</td>
+                    <td>@Html.ActionLink("Boleta", "DownLoadBoleta" , new { id=item.Id })</td>
                 
                 </tr>
                 }

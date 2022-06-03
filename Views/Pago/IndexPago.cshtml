@@ -25,18 +25,18 @@
     <br>
       <div class="container text-center col-7" style="border:1px solid #ccc; padding:2% 4%;">
         <div asp-validation-summary="All" class="text-danger"></div>
-          <form asp-controller="Pago"  asp-action="IndexPago"  method="post">
+          <form asp-controller="Pago" id="form"  asp-action="IndexPago"  method="post">
           <div class="mb-3 row">
             <label for="staticEmail" class="col-sm-4 col-form-label">N° de Tarjeta</label>
             <div class="col-sm-8">
-              <input type="text" class="form-control" asp-for="NumeroTarjeta" maxlength="16" autocomplete="off">
+              <input id="numeroTarjeta" type="text" class="form-control" onkeypress="return validarNumero(event);"  asp-for="NumeroTarjeta" maxlength="16" autocomplete="off" onpaste="return false">
             </div>
           </div>
           <div class="mb-3 row">
             <label for="staticEmail" class="col-sm-4 col-form-label">Tipo de Tarjeta</label>
             <div class="col-sm-8">
-              <select class="form-select" name="tipoTarjeta" aria-label="Default select example">
-                <option selected>Seleccione el Tipo de Tarjeta</option>
+              <select class="form-select" id="tipoTarjeta" name="tipoTarjeta" aria-label="Default select example">
+                <option selected disabled value="">Seleccione el Tipo de Tarjeta</option>
                 <option value="BBVA">BBVA</option>
                 <option value="BCP">BCP</option>
                 <option value="Interbank">Interbank</option>
@@ -47,17 +47,17 @@
           <div class="mb-3 row">
             <div class="col-sm-6 text-center ">
               <label for="staticEmail" class="col-form-label ">Fecha de Caducidad</label>
-                <input type="text" asp-for="DueDateYYMM" class="form-control" id="staticEmail" placeholder="MM/AA">
+                <input type="text" id="vencimiento" asp-for="DueDateYYMM" class="form-control" onkeypress="return validarDueDate(event);" id="staticEmail" placeholder="MM/AA" autocomplete="off" onpaste="return false">
             </div>
             <div class="col-sm-6 text-center">
               <label for="staticEmail" class="col-form-label ">Código de Seguridad</label>
-                <input type="text" asp-for="Cvv" class="form-control" id="staticEmail" placeholder="CVV">
+                <input type="text" asp-for="Cvv" class="form-control" id="cvv" onkeypress="return validarCvv(event);" placeholder="CVV" autocomplete="off" onpaste="return false">
             </div>
           </div>
           <div class="mb-3 row">
             <label for="staticEmail" class="col-sm-4 col-form-label">Nombre del propietario</label>
             <div class="col-sm-8">
-              <input type="text" asp-for="NombreTarjeta" class="form-control" id="staticEmail">
+              <input type="text" asp-for="NombreTarjeta" onkeypress="return validarNombre(event)" class="form-control" id="nombre" autocomplete="off" onpaste="return false">
             </div>
           </div>
           <div class="mb-3 row">
@@ -66,9 +66,197 @@
               <input type="text" asp-for="monto" class="form-control" id="monto" value="@monto"  disabled="disabled">
             </div>
           </div>
-          <button id="pagar" class="btn btn-primary">Pagar</button>
+          <button id="pagar" class="btn btn-primary" disabled>Pagar S./@monto</button>
           </form>
       </div>
 }
 
    
+@section Scripts {
+  
+   <script  text="text/javascript">
+
+       const tipoTarjeta = document.getElementById('tipoTarjeta');
+       const nombreTarjeta = document.getElementById('nombre');
+       const dueDate = document.getElementById('vencimiento');
+       const cvv = document.getElementById('cvv');
+       const numero = document.getElementById('numeroTarjeta');
+       const form = document.getElementById('form');
+
+       form.addEventListener('submit', (e) => {
+
+           e.preventDefault();
+
+           if(tipoTarjeta.value != '' && nombreTarjeta.value != '' && dueDate.value.length == 5 && cvv.value.length == 3 && numero.value.length == 16){
+                 
+                 Swal.fire({
+                   title: '¿Estas seguro de realizar el pago?',
+                   text: "Recuerda que no hay metodo de recuperacion una vez haya adquirido los curso!",
+                   icon: 'warning',
+                   showCancelButton: true,
+                   confirmButtonColor: '#3085d6',
+                   cancelButtonColor: '#d33',
+                   confirmButtonText: 'Si, realizar pago!'
+                 }).then((result) => {
+                   if (result.value) {
+                     Swal.fire(
+                       'Pago realizado!',
+                       'El pago se realizo con exito',
+                       'success'
+                     )
+                     form.submit();
+                   }
+                 })
+                
+
+           }else{
+              
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Por favor complete todos los campos para poder realizar el pago',
+                  })
+           }
+       });
+
+       tipoTarjeta.addEventListener('change' , () => {
+               
+               activateButton();
+
+       })
+
+       nombreTarjeta.addEventListener('keyup' , () => {
+               
+               activateButton();
+
+       })
+
+        dueDate.addEventListener('keyup' , () => {
+                
+                activateButton();
+  
+        })
+
+        cvv.addEventListener('keyup' , () => {
+                
+                activateButton();
+  
+        })
+
+        numero.addEventListener('keyup' , () => {
+                
+                activateButton();
+  
+        })
+       
+
+       const activateButton = () => {
+   
+            const pagar = document.getElementById('pagar');
+
+
+            if(tipoTarjeta.value != '' && nombreTarjeta.value != '' && dueDate.value.length == 5 && cvv.value.length == 3 && numero.value.length == 16){
+
+                pagar.disabled = false;
+
+            }else{  
+
+                pagar.disabled = true;
+
+            }
+
+       }
+
+       function validarDueDate(evt){
+         
+          var code = (evt.which) ? evt.which : evt.keyCode;
+          
+          if(code>=48 && code<=57 || code == 8){  
+
+                if(dueDate.value.length == 2 && code != 8){
+                  
+                    dueDate.value = dueDate.value + '/';
+
+                }
+              
+                if(dueDate.value.length >= 5 && code != 8){
+                  
+                    return false;
+
+                }
+
+                return true;
+
+		     	} else{       
+
+			         return false;
+
+			    }
+           
+
+       }
+
+       function validarNombre(event){
+         
+           var code = (event.which) ? event.which : event.keyCode;
+
+           if(code>= 48 && code<=57 ){
+             
+              return false;
+
+           }else{
+             
+              return true;
+           }
+
+       }
+
+       function validarCvv(evt){
+            
+            var code = (evt.which) ? evt.which : evt.keyCode;
+
+            if(code >= 48 && code <= 57){
+
+
+                if(cvv.value.length >= 3){
+
+                    return false;
+
+                }
+
+                   return true;
+
+            } else{
+
+                return false;
+
+            }
+
+       }
+
+       function validarNumero(evt){
+
+         	var code = (evt.which) ? evt.which : evt.keyCode;
+          
+          if(code>=48 && code<=57) { 
+               
+                if(numero.value.length >= 16){
+                   
+                    return false;
+                }
+                
+                return true;
+
+		     	} else{       
+
+			         return false;
+
+			    }
+
+       }
+
+
+   </script>
+
+
+}
