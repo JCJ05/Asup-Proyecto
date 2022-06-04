@@ -66,6 +66,8 @@ namespace Asup_Proyecto.Controllers
         public IActionResult IndexPago(Pago pago , string tipoTarjeta){
               
               if(ModelState.IsValid){
+                  
+                  //var existe = validarTarjeta(tipoTarjeta, pago.NumeroTarjeta, pago.DueDateYYMM, pago.Cvv, pago.NombreTarjeta);
 
                    var user = _userManager.GetUserAsync(User);
                    var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
@@ -518,6 +520,20 @@ namespace Asup_Proyecto.Controllers
             
             return new JsonResult(new { mensaje = "Pago creado con exito" });
        }
+
+       public Boolean validarTarjeta(string nombreTarjeta, string numeroTarjeta, string duedate, string cvv, string nombreTitular){
+
+            var tarjetas = _context.DataTarjetas.ToList();
+            
+            tarjetas = tarjetas.Where(x => x.NombreTarjeta.Equals(nombreTarjeta) && x.NumeroTarjeta.Equals(numeroTarjeta) && x.DueDateYYMM.Equals(duedate) && x.Cvv.Equals(cvv) && x.NombreTitular.Equals(nombreTitular)).ToList();
+
+            if(tarjetas.Count() == 1){
+                return true;
+            }else{
+                return false;
+            }
+
+        }
 
     }
 }

@@ -24,6 +24,6 @@ namespace Repaso_Net.Data
           public DbSet<Repaso_Net.Models.Module> DataModules {get; set; }
           public DbSet<Repaso_Net.Models.Archivo> DataArchivos {get; set; }
 
-
+          public DbSet<Repaso_Net.Models.Tarjeta> DataTarjetas {get; set; }
     }
 }

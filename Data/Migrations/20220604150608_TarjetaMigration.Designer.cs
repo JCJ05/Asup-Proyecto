@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Repaso_Net.Data;
@@ -9,9 +10,10 @@ using Repaso_Net.Data;
 namespace Repaso_Net.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220604150608_TarjetaMigration")]
+    partial class TarjetaMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,37 +498,6 @@ namespace Repaso_Net.Data.Migrations
                     b.HasIndex("moduleid");
 
                     b.ToTable("t_seccion");
-                });
-
-            modelBuilder.Entity("Repaso_Net.Models.Tarjeta", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Cvv")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DueDateYYMM")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NombreTarjeta")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NombreTitular")
-                        .HasColumnType("text");
-
-                    b.Property<string>("NumeroTarjeta")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Saldo")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("t_tarjeta");
                 });
 
             modelBuilder.Entity("Repaso_Net.Models.Usuario", b =>

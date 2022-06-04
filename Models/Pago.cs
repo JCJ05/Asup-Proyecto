@@ -24,6 +24,8 @@ namespace Repaso_Net.Models {
          public String NombreTarjeta { get; set; }
         
          [NotMapped]
+        [Required(ErrorMessage = "El campo NumeroTarjeta es obligatorio")]
+         [MinLength(16, ErrorMessage = "El campo NumeroTarjeta debe tener 16 caracteres")]
          public String NumeroTarjeta { get; set; }
         
          [NotMapped]
