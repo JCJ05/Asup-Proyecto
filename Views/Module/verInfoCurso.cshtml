@@ -22,6 +22,21 @@
     secciones = ViewBag.secciones;
 }
 
+<head>
+  
+   <style>
+       .pdf,.excel{
+         width: 5%;
+        }
+        
+       .word{
+         width: 7%;
+       }
+
+   </style>
+
+</head>
+
 <div style="display: flex;" >
    
           <div class="col-4">
@@ -35,11 +50,11 @@
 
                     @if(modulos.Count > 0){
 
-                        <ul class="card-body">
+                        <ul class="card-body list-group">
                               
                             @foreach(var item in modulos)
                             {
-                                <li><a href="/Module/verInfoCurso/@Model.Id?idmodulo=@item.id">@item.nombre</a></li>
+                                <li class="list-group-item"><a href="/Module/verInfoCurso/@Model.Id?idmodulo=@item.id">@item.nombre</a></li>
                             }
 
                         </ul>
@@ -105,6 +120,8 @@
 
     <div style="background-color: gray; width: 100%;">
 
+        <div style="padding: 10px;">
+
           @if(roles.Contains("profesor")){
 
             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal" >Agregar una Seccion</button>
@@ -115,12 +132,25 @@
           {
               
                <h3>@item.titulo</h3>
-               <p>@item.subtitulo</p>
-               <a href="@item.linkClase">@item.linkClase</a>
+               <h5>@item.subtitulo</h5>
+               <a style="text-decoration: none; color: black;" href="@item.linkClase">Link de la clase: @item.linkClase</a>
                 <ul>
+
                       @foreach(var archivo in item.archivos)
                       {
-                            <li>@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })</li>
+                           @if(archivo.extension == "pdf"){
+                                
+                                <li style="list-style: none; color: black;">@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })  <img class="pdf" src="~/img/pdf.png" alt="fileword"></li>
+                           }else if(archivo.extension == "docx"){
+                                <li style="list-style: none; color: black;">@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })  <img class="word" src="~/img/word.png" alt="fileword"></li>
+                           }else if(archivo.extension == "xlsx"){
+                                <li style="list-style: none; color: black;">@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })  <img class="excel" src="~/img/excel.png" alt="fileword"></li>
+                           }else if(archivo.extension == "png" || archivo.extension == "jpg" || archivo.extension == "jpeg"){
+                                <li style="list-style: none; color: black;">@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })  <img class="word" src="~/img/png-icon.png" alt="fileword"></li>
+                           }else{
+                                <li style="list-style: none; color: black;">@Html.ActionLink( archivo.nombreArchivo , "DownLoadArchivo" , new { id=archivo.Id })  <img class="word" src="~/img/document.jpg" alt="fileword"></li>
+                           }
+                           
                            
                       }
                 </ul>
@@ -134,10 +164,10 @@
 
                  
                 <hr />
-
-                <br />
               
           }
+
+          </div>
 
     </div>
 

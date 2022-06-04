@@ -167,13 +167,10 @@
                 '¡Pago Aprobado!',
                 'El pago ha sido aprobado.',
                 'success'
-                 )
+                 ).then(() => {
+                    window.location.href = "/Pago/Pendientes";
+                 });
 
-                 setTimeout(function(){
-
-                    location.reload();
-
-                 }, 3500);
 
               }else {
                       
@@ -212,13 +209,10 @@
                 '¡Pago Rechazado!',
                 'El pago ha sido rechazado.',
                 'success'
-                 )
+                 ).then(() => {
+                    window.location.href = "/Pago/Pendientes";
+                 });
 
-                 setTimeout(function(){
-
-                    location.reload();
-
-                 }, 3500);
 
               }else {
                       

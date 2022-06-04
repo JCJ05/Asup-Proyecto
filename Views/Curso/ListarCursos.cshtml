@@ -81,7 +81,13 @@
                 <h5 class="card-title">@item.nombre</h5>
                 <p class="card-text">@item.informacion</p>
                 <a asp-controller="Curso"  asp-action="VerCurso"  class="btn btn-primary" asp-route-id="@item.Id">Detalle</a>
-                <a  class="btn btn-success" onclick="verId(@item.Id);">Agregar al Carrito</a>
+                @if(item.cupo > 0)
+                {
+                  <a  class="btn btn-success" onclick="verId(@item.Id);">Agregar al Carrito</a>
+                }else {
+                    <a  class="btn btn-danger">No hay cupo el curso esta copado</a>
+                }
+
                @if(SignInManager.IsSignedIn(User)){
 
                     Usuario myidentity = await Task.Run(() => UserManager.GetUserAsync(User));

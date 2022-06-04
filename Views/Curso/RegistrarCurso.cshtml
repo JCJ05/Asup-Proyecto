@@ -58,7 +58,7 @@
 
       <div class="col-6 form-group">
         <label for="file">Imagen: </label>
-        <input type="file" for="file" name="files" class="form-control" accept="image/png, image/jpg, image/jpeg" required>
+        <input id="img" type="file" for="file" name="files" class="form-control"  accept="image/*" required>
     </div>
 
      <div class="col-6 form-group" >
@@ -81,12 +81,61 @@
 
             <span class="text-danger" asp-validation-for="usuario"></span>
 
+
        </div>
         
     </div>
 
+     <div class="form-group">
+               
+                    <img id="img_preview" class="img-thumbnail" />
+
+    </div>
+
+    <br />
+
     <button class="btn btn-primary">Registrar Curso</button>
 </form>
 
+@section Scripts {
+
+    <script text="text/javascript">
+      
+         const imagenRender = document.getElementById('img');
+
+          imagenRender.addEventListener('change', (e) => {
+
+                const file = e.target.files[0];
+                const formato = file.type.substring(0, 5);
+                const img = document.getElementById('img_preview');
+                 
+                 if(formato == "image"){
+
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        const dataUrl = e.target.result;
+                        img.src = dataUrl;
+                    }
+
+                    reader.readAsDataURL(file);
+
+                 }else {
+
+                    imagenRender.value = "";
+                    img.src = "";
+
+                     Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'El formato de la imagen no es valido',
+                    })
+                 }
+
+
+              });
+    
+    </script>
+}
 
 
