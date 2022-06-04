@@ -8,13 +8,13 @@
 <div class="container">
         <br>
         <div class="row">
-            <div class="col-sm-6">
+            <div class="col-lg-6">
                 <img class="rounded"
                     src="data:image/png;base64,@Model.fileBase64"
-                    width="500" />
+                    width="300" />
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-lg-6">
                 <div class="row">
                     <div class="col-sm-6">
                         <h4>Curso</h4>
@@ -24,13 +24,13 @@
                         <h4>Docente</h4>
                         <p>Ing. @Model.usuario.nombres @Model.usuario.apellidos</p>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <h4>Descripción</h4>
-                            <p>@Model.informacion</p>
-                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4>Descripción</h4>
+                        <p>@Model.informacion</p>
                     </div>
-                </div><br>
+                </div>
                 <div class="row">
                     <div class="col-sm-6">
                         <h4>Fecha de Inicio</h4>
@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <button class="btn btn-primary">Inscribirse</button>
+                    <button class="btn btn-success" onclick="verId(@Model.Id);">Agregar al Carrito</button>
                 </div>
     
     </div>

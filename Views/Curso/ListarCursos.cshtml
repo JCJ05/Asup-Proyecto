@@ -37,27 +37,32 @@
     
       <div style="display: flex; justify-content: space-between;">
 
-           <div>
-
-                <label>Curso: </label>
-                <input type="text" class="form-control" id="nombre" placeholder="Nombre del curso">
-
-           </div>
-
-              <div>
-    
-                 <label>Desde: </label>
-                 <input type="date" class="form-control" id="fecha">
-
-              </div>
-
-               <div>
-    
-                 <label>Precio: </label>
-                 <input type="number" step="2.5" class="form-control" id="precio">
-
-              </div>
-
+          <table>
+                <tr>
+                    <td><label>Curso: </label></td>
+                    <td colspan="2"><label>Fecha: </label></td>
+                    <td colspan="2"><label>Precio: </label></td>
+                </tr>
+                <tr>
+                    <td><input type="text" class="form-control" id="nombre" placeholder="Nombre del curso"></td>
+                    <td>
+                        <label>Desde: </label>
+                        <input type="date" class="form-control" id="fechaMin">
+                    </td>
+                    <td>
+                        <label>Hasta: </label>
+                        <input type="date" class="form-control" id="fechaMax">
+                    </td>
+                    <td>
+                        <label>Min: </label>
+                        <input type="number" step="2.5" class="form-control" id="precioMin">
+                    </td>
+                    <td>
+                        <label>Max: </label>
+                        <input type="number" step="2.5" class="form-control" id="precioMax">
+                    </td>
+                </tr>
+          </table>
       </div>
 
   </div>
@@ -103,8 +108,10 @@
     <script text="text/javascript">
       
        const nombre = document.getElementById("nombre");
-       const fecha = document.getElementById("fecha");
-       const precio = document.getElementById("precio");
+       const fechaMin = document.getElementById("fechaMin");
+       const fechaMax = document.getElementById("fechaMax");
+       const precioMin = document.getElementById("precioMin");
+       const precioMax = document.getElementById("precioMax");
        const cursos = new Array();
 
        nombre.addEventListener('keyup' , (e) => {
@@ -112,13 +119,25 @@
              callApi();
        })
 
-       precio.addEventListener('keyup' , (e) => {
+       precioMin.addEventListener('keyup' , (e) => {
             
              callApi();
 
        });
 
-       fecha.addEventListener('change' , (e) => {
+       precioMax.addEventListener('keyup' , (e) => {
+            
+             callApi();
+
+       });
+
+       fechaMin.addEventListener('change' , (e) => {
+                
+            callApi();
+    
+      });
+
+      fechaMax.addEventListener('change' , (e) => {
                 
             callApi();
     
@@ -129,13 +148,15 @@
         
             const data = {
                 nombre: nombre.value? nombre.value : 'null',
-                fecha: fecha.value? fecha.value : 'no',
-                precio: precio.value? precio.value : 0
+                fechaMin: fechaMin.value? fechaMin.value : 'no',
+                fechaMax: fechaMax.value? fechaMax.value : 'no',
+                precioMin: precioMin.value? precioMin.value : 0,
+                precioMax: precioMax.value? precioMax.value : 0
             }
 
             console.log(data);
 
-            const url = `https://localhost:5001/api/filtro?nombre=${data.nombre}&fecha=${data.fecha}&precio=${data.precio}`;
+            const url = `https://localhost:5001/api/filtro?nombre=${data.nombre}&fechaMin=${data.fechaMin}&fechaMax=${data.fechaMax}&precioMin=${data.precioMin}&precioMax=${data.precioMax}`;
 
             console.log(url);
     
