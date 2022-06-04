@@ -45,6 +45,7 @@ namespace Repaso_Net.Controllers {
                 sueldo += proforma.curso.precio;
             }
 
+            ViewData["Title"] = "Carrito";
             ViewBag.sueldo = sueldo;
             
             return View(proformas);

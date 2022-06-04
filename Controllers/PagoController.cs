@@ -55,6 +55,8 @@ namespace Asup_Proyecto.Controllers
             
             ViewBag.proformas = proformas;
             ViewBag.monto = sueldo;
+
+            ViewData["Title"] = "Pago con tarjeta";
             return View();
         }
         
@@ -154,6 +156,7 @@ namespace Asup_Proyecto.Controllers
             var user = _userManager.GetUserAsync(User);
             var compras = _context.DataCompras.Include(c => c.Pago).Include(c => c.usuario).Where(c => c.usuario.Id == user.Result.Id).ToList();
 
+            ViewData["Title"] = "Pedidos";
             return View(compras);
         }
 
@@ -163,6 +166,7 @@ namespace Asup_Proyecto.Controllers
             var user = _userManager.GetUserAsync(User);
             var pagos = _context.DataPagos.Include(p => p.usuario).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
 
+            ViewData["Title"] = "Pedidos Pendientes";
             return View(pagos);
 
         }
@@ -354,7 +358,7 @@ namespace Asup_Proyecto.Controllers
             ViewBag.proformas = proformas;
             ViewBag.monto = sueldo;
 
-        
+            ViewData["Title"] = "Pago por transferencia";
             return View();
           
        }

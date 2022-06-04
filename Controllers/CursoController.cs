@@ -245,6 +245,7 @@ namespace Repaso_Net.Controllers {
             var usuario = _userManager.GetUserAsync(User).Result;
             var cursos = _context.DataCursoAlumnos.Include(e => e.Curso).Include(e => e.Curso.usuario).Where(e => e.usuario.Id == usuario.Id).ToList();
 
+            ViewData["Title"] = "Mis Cursos";
             return View(cursos);
        }
         
