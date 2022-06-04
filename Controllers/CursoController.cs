@@ -224,21 +224,41 @@ namespace Repaso_Net.Controllers {
          }
          
            
-          [Authorize(Roles = "administrador")]
-          public IActionResult EliminarCurso(int id){
+          
+       
+       [HttpGet]
+       public async Task<ActionResult<String>> eliminarCurso(int id){
             
-             var curso = _context.DataCursos.Find(id);
+              var cursoAlumno= _context.DataCursoAlumnos.Include(e => e.Curso).Where(e => e.Curso.Id == id).FirstOrDefault();
+              var mensaje = "";
 
-             if(curso == null){
+            if(cursoAlumno != null){
 
-                 return NotFound();
-             }
+                mensaje = "No se puede eliminar el curso porque hay alumnos inscritos";
+            
+            }else {
+                    
+                    var archivos = await _context.DataArchivos.Include(e=> e.seccion.module.curso).Where(e => e.seccion.module.curso.Id == id).ToListAsync();
+                    _context.DataArchivos.RemoveRange(archivos);
 
-             _context.DataCursos.Remove(curso);
-             _context.SaveChanges();
+                    var secciones = await  _context.DataSecciones.Include(e => e.module.curso).Where(e => e.module.curso.Id == id).ToListAsync();
+                    _context.DataSecciones.RemoveRange(secciones);
 
-            return RedirectToAction("ListarCursos");
-       }
+                    var modulos = await _context.DataModules.Include(e => e.curso).Where(e => e.curso.Id == id).ToListAsync();
+                    _context.DataModules.RemoveRange(modulos);
+
+                    var curso = _context.DataCursos.Find(id);
+                    _context.DataCursos.Remove(curso);
+
+                    mensaje = "Curso eliminado con Exito";
+                    await _context.SaveChangesAsync();
+
+            }
+
+             return new JsonResult(new { mensaje = mensaje });
+
+         }
+       
 
        public IActionResult MisCursos(){
 

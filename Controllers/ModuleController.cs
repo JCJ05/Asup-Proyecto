@@ -70,7 +70,7 @@ namespace Repaso_Net.Controllers
 
              }else {
                     
-                    var modulo = _context.DataModules.Where(x => x.id == idModulo).FirstOrDefault();
+                    var modulo = _context.DataModules.Include(x => x.curso).Where(x => x.id == idModulo && x.curso.Id == id).FirstOrDefault();
 
                     if(modulo != null){
 

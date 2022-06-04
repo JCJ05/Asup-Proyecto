@@ -84,7 +84,7 @@
 
                    if(roles.Contains("administrador")){
                       <a class="btn btn-info" asp-controller="Curso" asp-action="EditarCurso" asp-route-id="@item.Id">Editar</a>
-                      <a class="btn btn-danger" asp-controller="Curso" asp-action="EliminarCurso" asp-route-id="@item.Id" >Eliminar</a>  
+                      <a class="btn btn-danger" onclick="callApiEliminarCurso(@item.Id);" >Eliminar</a>  
                    }
 
                 
@@ -211,6 +211,61 @@
 
                 cartas.innerHTML = `<div class="alert alert-danger text-center">No hay cursos con los filtros que buscaste</div>`;
             }
+
+     }
+
+     function callApiEliminarCurso(id){
+
+         console.log(id);
+          
+          Swal.fire({
+            title: 'Estas seguro de eliminar?',
+            text: "Esta accion no se puede revertir!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si eliminar!'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                
+                callApiEliminr(id);
+
+            }
+         })
+
+     }
+
+     const callApiEliminr = async(id) => {
+          
+          console.log(id);
+          const url = `https://localhost:5001/Curso/eliminarCurso?id=${id}`;
+          const response = await fetch(url)
+          const data = await response.json()
+        
+          const {mensaje} = data;
+          
+          if(mensaje == 'Curso eliminado con Exito'){
+              
+               Swal.fire({
+                title: 'Eliminado!',
+                text: mensaje,
+                icon: 'success',
+                confirmButtonText: 'Ok'
+               })
+
+               window.location.href = '/Curso/ListarCursos';
+
+          }else {
+
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: mensaje,
+            })
+          }
+
+          return mensaje;
 
      }
 

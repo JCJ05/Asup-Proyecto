@@ -326,8 +326,15 @@
         archivosFile.forEach(function(file) {
             formData.append('archivos', file);
         });
-
        
+         Swal.fire({
+            title: 'Enviando archivo a la base de datos',
+            text: 'Espere por favor',
+            onBeforeOpen: () => {
+              Swal.showLoading()
+            }
+            })
+                   
         fetch('/Module/saveArchivos' , {
             method: 'POST',
             body: formData
@@ -365,13 +372,7 @@
 
        const logicalModal = async (event) => {
     
-        //const button = event.relatedTarget
-        //const idPago = button.getAttribute('data-bs-whatever')
-
-       //const data = await callApiGetVoucher(idPago)
-    
         const modalTitle = exampleModal.querySelector('.modal-title')
-       // const imagen = document.getElementById('imgVoucher');
         modalTitle.textContent = "Formulario de la Seccion"
 
     }
