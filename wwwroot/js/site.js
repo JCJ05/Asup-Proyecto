@@ -64,6 +64,91 @@ let articulosCarrito = [];
     
 }
 
+async function mensajeTarjeta(nombreTarjeta, numeroTarjeta, duedate, cvv, nombreTitular, monto){
+
+    const mensaje = await validarTarjeta(nombreTarjeta, numeroTarjeta, duedate, cvv, nombreTitular, monto);
+     console.log(mensaje);
+    
+    if(mensaje == 'Los datos de la tarjeta son correctos.'){
+        Swal.fire({
+            title: '¿Estas seguro de realizar el pago?',
+            text: "Recuerda que no hay metodo de recuperacion una vez haya adquirido los curso!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, realizar pago!'
+          }).then((result) => {
+            if (result.value) {
+              
+                actualizarSaldoTarjeta(numeroTarjeta, monto);
+
+                Swal.fire(
+                'Pago realizado!',
+                'El pago se realizo con exito',
+                'success'
+              )
+              form.submit();
+            }
+          })
+    }else{
+        errorSweetAlert('Error' , mensaje);
+    }
+
+}
+
+async function validarTarjeta(nombreTarjeta, numeroTarjeta, duedate, cvv, nombreTitular, monto){
+    let mensaje = "";
+    var url = `https://localhost:5001/api/tarjeta?nombreTarjeta=${nombreTarjeta}&numeroTarjeta=${numeroTarjeta}&duedate=${duedate}&cvv=${cvv}&nombreTitular=${nombreTitular}&monto=${monto}`;
+
+    const response = await fetch(url , {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if(response.ok){
+
+        data = await response.json()
+        const {mensajeTarjeta} = data;
+        mensaje = mensajeTarjeta;
+
+    }else {
+
+        console.error(response.status);
+
+    }
+
+    return mensaje;
+}
+
+async function actualizarSaldoTarjeta(numeroTarjeta, monto){
+    let mensaje = "";
+    var url = `https://localhost:5001/api/tarjeta?numeroTarjeta=${numeroTarjeta}&monto=${monto}`;
+
+    const response = await fetch(url , {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if(response.ok){
+
+        data = await response.json()
+        const {mensajeSaldo} = data;
+        mensaje = mensajeSaldo;
+
+    }else {
+
+        console.error(response.status);
+
+    }
+
+    return mensaje;
+}
+
 function consultDelete(id){
   
     Swal.fire({

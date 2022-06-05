@@ -81,6 +81,7 @@
        const dueDate = document.getElementById('vencimiento');
        const cvv = document.getElementById('cvv');
        const numero = document.getElementById('numeroTarjeta');
+       const monto = document.getElementById('monto');
        const form = document.getElementById('form');
 
        form.addEventListener('submit', (e) => {
@@ -88,26 +89,8 @@
            e.preventDefault();
 
            if(tipoTarjeta.value != '' && nombreTarjeta.value != '' && dueDate.value.length == 5 && cvv.value.length == 3 && numero.value.length == 16){
-                 
-                 Swal.fire({
-                   title: '¿Estas seguro de realizar el pago?',
-                   text: "Recuerda que no hay metodo de recuperacion una vez haya adquirido los curso!",
-                   icon: 'warning',
-                   showCancelButton: true,
-                   confirmButtonColor: '#3085d6',
-                   cancelButtonColor: '#d33',
-                   confirmButtonText: 'Si, realizar pago!'
-                 }).then((result) => {
-                   if (result.value) {
-                     Swal.fire(
-                       'Pago realizado!',
-                       'El pago se realizo con exito',
-                       'success'
-                     )
-                     form.submit();
-                   }
-                 })
-                
+             
+             mensajeTarjeta(tipoTarjeta.value, numero.value, dueDate.value, cvv.value, nombreTarjeta.value, monto.value);
 
            }else{
               
