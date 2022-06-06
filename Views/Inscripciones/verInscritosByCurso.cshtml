@@ -1,0 +1,62 @@
+@model List<CursoAlumno>
+
+@{
+    Curso curso = ViewBag.curso;
+}
+
+@if(Model.Count == 0)
+{
+    <div class="alert alert-info">
+        <strong>No hay alumnos inscritos en este curso</strong>
+    </div>
+}
+@if(Model.Count > 0)
+{
+
+<div class="container">
+
+     <h3 class="text-center">@curso.nombre</h3>
+   
+    <div class="alert alert success text-center">Hay @Model.Count alumnos inscritos en el curso</div>
+
+    <div>
+         
+          <table class="table table-stripped">
+
+              <thead>
+              
+                    <tr>
+                        <th>Nombres: </th>
+                        <th>Dni:</th>
+                        <th>Correo: </th>
+                        <th>Fecha de Matricula</th>
+
+                    </tr>
+
+              </thead>
+
+              <tbody>
+                    
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                             
+                             <td>@item.usuario.nombres @item.usuario.apellidos</td>
+                             <td>@item.usuario.identificacion</td>
+                             <td>@item.usuario.Email</td>
+                             <td>@item.fechaMatricula</td>
+
+                        </tr>
+                        
+                    }
+
+              </tbody>
+  
+
+          </table>
+
+    </div>
+
+</div>
+
+}

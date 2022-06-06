@@ -1,0 +1,152 @@
+@model List<Curso>
+
+
+ <div class="controller">
+
+    <div class="form-group">
+           <label>Buscar Curso</label>
+           <input type="text" placeholder="Buscar Curso" id="nombreCurso">
+    </div>
+
+
+   <div id="seccion">
+
+           <table id="tablaCursos" class="table table-striped">
+              
+               <thead>
+                  
+                 <tr>
+                   <th>Curso</th>
+                   <th>Profesor</th>
+                   <th>Precio</th>
+                   <th>Horario</th>
+                   <th>Inscritos</th>
+                </tr>
+
+               </thead>
+
+               <tbody id="listarCursos">
+                    
+                 @foreach (var item in Model)
+                 {
+
+                      <tr>
+                          <td>@item.nombre</td>
+                          <td>@item.usuario.nombres @item.usuario.apellidos</td>
+                          <td>S/.@item.precio<strong>.00</strong></td>
+                          <td>@item.horario</td>
+                          <td><a class="btn btn-warning" asp-controller="Inscripciones" asp-action="verInscritosByCurso" asp-route-id="@item.Id" >Ver Inscritos</a></td>
+                      </tr>
+                     
+                 }
+                    
+
+               </tbody>
+
+           </table>
+
+   </div>
+
+ </div>
+
+ @section Scripts {
+  
+   <script type="text/javascript">
+        
+        const nombreCurso = document.getElementById('nombreCurso');
+        const tablaCursos = document.getElementById('tablaCursos');
+
+        nombreCurso.addEventListener('keyup', async function(e){
+
+          const nombre = e.target.value.toString();
+          const nameCourse = nombre? nombre : null;
+
+          const url = `/Inscripciones/findCursosByNombre?nombre=${nameCourse.trim()}`;
+          console.log(nombre.trim());
+
+            const response = await fetch(url);
+           
+            if(response.ok){
+
+                const data = await response.json();
+                const {dataCursos} = data;
+                listarCursosByNombre(dataCursos);
+
+            }else {
+
+                const alertMensaje = document.getElementById('mensaje');
+
+                if(alertMensaje){
+
+                    alertMensaje.remove();
+
+                }
+                 
+                const seccion = document.getElementById('seccion');
+                const mensaje = document.createElement('div');
+                tablaCursos.style.display = 'none';
+                mensaje.id = 'mensaje';
+                mensaje.classList.add('alert', 'alert-danger');
+                mensaje.textContent = `No se encontraron resultados para ${nombre} en ningun curso`;
+                seccion.appendChild(mensaje);
+                
+
+                console.log(response.status);
+            }
+
+
+
+           
+        });
+
+        const listarCursosByNombre = (dataCursos) => {
+            
+            tablaCursos.style.display = 'block';
+            const listarCursos = document.getElementById('listarCursos');
+            const mensaje = document.getElementById('mensaje');
+
+            if(mensaje){
+
+                mensaje.remove();
+
+            }
+           
+
+            listarCursos.innerHTML = '';
+
+            dataCursos.forEach(curso => {
+
+                const tr = document.createElement('tr');
+                const tdNombre = document.createElement('td');
+                const tdProfesor = document.createElement('td');
+                const tdPrecio = document.createElement('td');
+                const tdHorario = document.createElement('td');
+                const tdInscritos = document.createElement('td');
+                const btnInscritos = document.createElement('a');
+                btnInscritos.classList.add('btn' , 'btn-warning');
+                btnInscritos.href = `/Inscripciones/verInscritosByCurso/${curso.id}`;
+
+                tdNombre.innerHTML = curso.nombre;
+                tdProfesor.innerHTML = `${curso.usuario.nombres} ${curso.usuario.apellidos}`;
+                tdPrecio.innerHTML = `S/.${curso.precio}<strong>.00</strong>`;
+                tdHorario.innerHTML = curso.horario;
+                btnInscritos.innerHTML = 'Ver Inscritos';
+
+                tdInscritos.appendChild(btnInscritos);
+
+                tr.appendChild(tdNombre);
+                tr.appendChild(tdProfesor);
+                tr.appendChild(tdPrecio);
+                tr.appendChild(tdHorario);
+                tr.appendChild(tdInscritos);
+
+                listarCursos.appendChild(tr);
+
+            });
+
+        }
+
+
+   </script>
+
+ }
