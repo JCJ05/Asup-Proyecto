@@ -1,0 +1,48 @@
+@model List<Cantidad>
+
+@{
+    var cursoMasInscrito = ViewBag.CursoMasInscrito;
+    var cantidadInscritos = ViewBag.CantidadInscritos;
+}
+
+
+<div class="alert alert-sucess">
+  
+   <div class="alert alert-info">
+         
+         <p class="text-center">El curso mas inscrito fue @cursoMasInscrito con @cantidadInscritos alumnos inscritos hasta la fecha</p>
+
+   </div>
+
+   <table class="table table-striped">
+
+        <thead>
+            
+             <tr>
+               
+                  <th>Curso</th>
+                  <th>Cantidad de alumnos</th>
+
+             </tr>
+
+        </thead>
+
+        <tbody>
+              
+               @foreach (var item in Model)
+               {
+
+                   <tr>
+                     
+                       <td>@item.Nombre</td>
+                       <td style="padding-left: 40px;">@item.CantidadInscritos</td>
+
+                   </tr>
+                   
+               }
+
+        </tbody>
+
+   </table>
+
+</div>
