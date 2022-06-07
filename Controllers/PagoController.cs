@@ -394,7 +394,7 @@ namespace Asup_Proyecto.Controllers
            
             _context.UpdateRange(proformas);
 
-            string servidor = "smtp.gmail.com";
+           /* string servidor = "smtp.gmail.com";
             int puerto = 587;
             
             string GmailUser = "asupempresas@gmail.com";
@@ -419,7 +419,7 @@ namespace Asup_Proyecto.Controllers
             cliente.Connect(servidor, puerto, MailKit.Security.SecureSocketOptions.StartTls);
             cliente.Authenticate(GmailUser, GmailPass);
             cliente.Send(message);
-            cliente.Disconnect(true);
+            cliente.Disconnect(true);*/
 
              await _context.SaveChangesAsync();
 
