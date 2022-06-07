@@ -49,9 +49,15 @@ namespace Repaso_Net.Controllers.Rest
              
              if(User.Identity.IsAuthenticated){
 
-                  var curso = await _context.DataCursos.FirstOrDefaultAsync(c => c.Id == id);
+                  var curso = await _context.DataCursos.Include(c => c.usuario).FirstOrDefaultAsync(c => c.Id == id);
                   var user = await _context.DataUsuarios.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
                   string mensaje = "";
+
+                  if(curso.usuario.Id == user.Id){
+
+                      mensaje = "No puedes agregar un curso a tus propios cursos";
+
+                  }else {
 
                    if(curso!=null && user!=null){
 
@@ -96,6 +102,8 @@ namespace Repaso_Net.Controllers.Rest
                         mensaje = "Error desconocido";
 
                     }
+
+                  }
                  
                     return new JsonResult(new { course = mensaje });
 

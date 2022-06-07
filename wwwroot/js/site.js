@@ -55,7 +55,13 @@ let articulosCarrito = [];
 
         errorSweetAlert('Lo siento...' , 'El curso no se puede añadir al carrito porque ya estas inscrito en el curso');
 
-      }else {
+      }else if(mensaje == "No puedes agregar un curso a tus propios cursos"){
+
+        errorSweetAlert('Lo siento...' , 'No puedes agregar un curso a tu curso que estas enseñando');
+
+      }
+      
+      else {
            
         errorSweetAlert('Opps...' , 'Algo salio mal vuelve a intentarlo mas tarde');
 
@@ -77,7 +83,8 @@ async function mensajeTarjeta(nombreTarjeta, numeroTarjeta, duedate, cvv, nombre
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, realizar pago!'
+            confirmButtonText: 'Si, realizar pago!',
+            cancelButtonText: 'Cancelar'
           }).then((result) => {
             if (result.value) {
               
@@ -158,7 +165,8 @@ function consultDelete(id){
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Si, eliminar!'
+        confirmButtonText: 'Si, eliminar!',
+        cancelButtonText: 'Cancelar'
       }).then((result) => {
         if (result.isConfirmed) {
 

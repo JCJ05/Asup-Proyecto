@@ -87,6 +87,11 @@ namespace Repaso_Net.Controllers
             if(nombre != null){
                  
                   cursos = await _context.DataCursos.Include(x => x.usuario).Where(x => x.nombre.ToLower().Contains(nombre.ToLower())).ToListAsync();
+                  
+                   if(cursos.Count == 0){
+
+                     return BadRequest("No se encontraron cursos");
+                 }
 
             }else {
                  
@@ -95,10 +100,7 @@ namespace Repaso_Net.Controllers
 
            
             
-            if(cursos.Count == 0){
-
-                return BadRequest("No se encontraron cursos");
-            }
+           
 
             return new JsonResult(new {  dataCursos = cursos});
         }

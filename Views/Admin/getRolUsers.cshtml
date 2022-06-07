@@ -1,0 +1,218 @@
+@model IList<Usuario>
+
+ <div>
+   
+   <div class="form-group">
+           <label>Buscar por Dni: </label>
+           <input type="text" placeholder="Buscar por Dni" id="identificacion" onkeypress="return validarNumero(event);" autocomplete="off" onpaste="return false">
+    </div>
+
+ 
+ </div>
+
+<div id="seccion">
+
+  <table id="tablaCursos" class="table table-striped">
+
+      <thead>
+
+           <tr>
+              
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Correo</th>
+                <th>Dni</th>
+                <th>Direccion</th>
+                <th>Asignar Rol</th>
+
+           </tr>
+
+
+      </thead>
+
+      <tbody id="listarUsuarios">
+          
+           @foreach (var item in Model)
+           {
+
+               <tr>
+                   
+                   <td>@item.nombres</td>
+                   <td>@item.apellidos</td>
+                   <td>@item.Email</td>
+                   <td>@item.identificacion</td>
+                   <td>@item.direccion</td>
+                   <td><button type="button" class="btn btn-warning" onclick="asignarRol(`@item.Id`)">Asignar Rol Profesor</button></td>
+
+               </tr>
+               
+           }
+
+      </tbody>
+
+
+  </table>
+
+</div>
+
+  @section Scripts {
+
+      <script text="text/javascript">
+
+          const numero = document.getElementById('identificacion');
+          const tablaCursos = document.getElementById('tablaCursos');
+
+          numero.addEventListener('keyup' , async(e) => {
+                 
+                 console.log(e.target.value);
+                 const dniValor = e.target.value.toString();
+                 const dniParam = dniValor? dniValor : '';
+                 const url = `/Admin/findByDni?dni=${dniParam}`;
+                  
+                  const response = await fetch(url);
+
+                  if(response.ok){
+
+                      const data = await response.json();
+                      const {dataUsuarios} = data;
+                      console.log(dataUsuarios);
+                      listarUsuariosXDni(dataUsuarios);
+                  }else {
+                    
+                       const alertMensaje = document.getElementById('mensaje');
+
+                        if(alertMensaje){
+
+                            alertMensaje.remove();
+
+                        }
+                        
+                        const seccion = document.getElementById('seccion');
+                        const mensaje = document.createElement('div');
+                        tablaCursos.style.display = 'none';
+                        mensaje.id = 'mensaje';
+                        mensaje.classList.add('alert', 'alert-danger');
+                        mensaje.textContent = `No se encontraron resultados para ${dniValor} en ningun usuario`;
+                        seccion.appendChild(mensaje);
+
+                  }
+
+          })
+
+          const listarUsuariosXDni = (usuarios) => {
+               
+               tablaCursos.style.display = 'block';
+               const listarUsuarios = document.getElementById('listarUsuarios');
+               const mensaje = document.getElementById('mensaje');
+
+               if(mensaje){
+
+                  mensaje.remove();
+
+               }
+
+                listarUsuarios.innerHTML = '';
+
+                usuarios.forEach(usuario => {
+
+                    const {id, nombres, apellidos, email, identificacion, direccion} = usuario;
+
+                    const tr = document.createElement('tr');
+
+                    const tdNombres = document.createElement('td');
+                    const tdApellidos = document.createElement('td');
+                    const tdEmail = document.createElement('td');
+                    const tdDni = document.createElement('td');
+                    const tdDireccion = document.createElement('td');
+                    const tdAsignarRol = document.createElement('td');
+
+                    tdNombres.innerHTML = nombres;
+                    tdApellidos.innerHTML = apellidos;
+                    tdEmail.innerHTML = email;
+                    tdDni.innerHTML = identificacion;
+                    tdDireccion.innerHTML = direccion;
+                    tdAsignarRol.innerHTML = `<button type="button" class="btn btn-warning" onclick="asignarRol('${usuario.id}')">Asignar Rol Profesor</button>`;
+
+                    tr.appendChild(tdNombres);
+                    tr.appendChild(tdApellidos);
+                    tr.appendChild(tdEmail);
+                    tr.appendChild(tdDni);
+                    tr.appendChild(tdDireccion);
+                    tr.appendChild(tdAsignarRol);
+
+                    listarUsuarios.appendChild(tr);
+
+                })
+
+
+          }
+
+           function validarNumero(evt){
+
+         	var code = (evt.which) ? evt.which : evt.keyCode;
+          
+          if(code>=48 && code<=57) { 
+               
+                if(numero.value.length >= 8){
+                   
+                    return false;
+                }
+                
+                return true;
+
+		 } else{       
+
+			    return false;
+
+		 }
+
+       }
+        
+          function asignarRol(id){
+              
+                Swal.fire({
+                         title: '¿Esta seguro de asignarle al usuario el rol del profesor?',
+                         text: "¡Recuerda que una vez que aceptes este cambio es irreversible!",
+                         type: 'warning',
+                         showCancelButton: true,
+                         confirmButtonColor: '#3085d6',
+                         cancelButtonColor: '#d33',
+                         confirmButtonText: '¡Si, asignar rol!',
+                         cancelButtonText: '¡No, cancelar!',
+                         }).then((result) => {
+                             if (result.value) {
+                                  callApiChangeRolUser(id);
+                             }
+                      })
+
+          }
+
+          const callApiChangeRolUser = async(id) => {
+
+                const url = `/Admin/changeRolUser?id=${id}`;
+
+                const response = await fetch(url);
+
+                if(response.ok){
+
+                    const data = await response.json();
+                    const {mensaje} = data;
+
+                    Swal.fire(
+                          '¡Hecho!',
+                          mensaje,
+                          'success'
+                    ).then(() => {
+                          window.location.href = '/Admin/getRolUsers';
+                    })
+
+                   
+
+               }
+
+          }
+          
+        
+      </script>
+
+  }

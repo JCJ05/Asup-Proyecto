@@ -259,7 +259,8 @@ namespace Repaso_Net.Controllers {
 
          }
        
-
+       
+       [Authorize(Roles = "profesor,alumno")]
        public IActionResult MisCursos(){
 
             var usuario = _userManager.GetUserAsync(User).Result;
@@ -267,6 +268,16 @@ namespace Repaso_Net.Controllers {
 
             ViewData["Title"] = "Mis Cursos";
             return View(cursos);
+       }
+       
+       [Authorize(Roles = "profesor")]
+       public IActionResult CursoProfesor(){
+            
+             var usuario = _userManager.GetUserAsync(User).Result;
+             var cursos = _context.DataCursos.Include(e => e.usuario).Where(e => e.usuario.Id == usuario.Id).ToList();
+
+             return View(cursos);
+
        }
         
     }

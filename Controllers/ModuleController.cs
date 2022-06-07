@@ -33,7 +33,7 @@ namespace Repaso_Net.Controllers
          [Authorize(Roles = "profesor,alumno")]
          public IActionResult verInfoCurso(int id , int idModulo = 0){
              var idFind = 0;
-             var curso = _context.DataCursos.Where(x => x.Id == id).FirstOrDefault();
+             var curso = _context.DataCursos.Include(x => x.usuario).Where(x => x.Id == id).FirstOrDefault();
              
              if(curso == null){
                  
@@ -91,7 +91,18 @@ namespace Repaso_Net.Controllers
              foreach(var item in secciones){
                  item.archivos = _context.DataArchivos.Include(x => x.seccion).Where(x => x.seccion.Id == item.Id).ToList();
              }
-             
+            
+             var usuarioId = _userManager.GetUserId(User);
+
+             if(usuarioId == curso.usuario.Id){
+
+                 ViewBag.isOwner = true;
+                 
+             }else {
+
+                    ViewBag.isOwner = false;
+            }
+
              ViewBag.idSeccion = idFind;
              ViewBag.modulos = modulos;
              ViewBag.secciones = secciones;
