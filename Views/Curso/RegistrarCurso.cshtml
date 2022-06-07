@@ -12,53 +12,53 @@
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
-<form asp-controller="Curso"  asp-action="RegistrarCurso"  method="post" class="row g-2 align-items-center" enctype="multipart/form-data">
+<form id="formualrio" asp-controller="Curso"  asp-action="RegistrarCurso"  method="post" class="row g-2 align-items-center" enctype="multipart/form-data">
 
     <div class="col-12 form-group">
         <label asp-for="nombre">Nombre del curso</label>
-        <input type="text" asp-for="nombre" class="form-control">
+        <input id="nombre" type="text" asp-for="nombre" class="form-control" autocomplete="off" onpaste="return false">
         <span class="text-danger" asp-validation-for="nombre"></span>
     </div>
 
     <div class="col-6 form-group">
         <label asp-for="fechaInicio">Fecha de inicio</label>
-        <input type="date" asp-for="fechaInicio" class="form-control">
+        <input id="fechaInicio" type="date" min="" asp-for="fechaInicio" class="form-control" autocomplete="off" onpaste="return false">
         <span class="text-danger" asp-validation-for="fechaInicio"></span>
     </div>
 
     <div class="col-6 form-group">
         <label asp-for="fechaFin">Fecha de fin</label>
-        <input type="date" asp-for="fechaFin" class="form-control">
+        <input id="fechaFin" type="date" asp-for="fechaFin" class="form-control" autocomplete="off" onpaste="return false">
         <span class="text-danger" asp-validation-for="fechaFin"></span>
     </div>
 
     <div class="col-6 form-group">
         <label asp-for="horario">Horario: </label>
-        <input type="text" asp-for="horario" class="form-control">
+        <input id="horario" type="text" asp-for="horario" class="form-control" autocomplete="off" onpaste="return false">
         <span class="text-danger" asp-validation-for="horario"></span>
     </div>
 
      <div class="col-6 form-group">
         <label asp-for="cupo">Cupos disponibles: </label>
-        <input type="number" asp-for="cupo" class="form-control">
+        <input id="cupo" type="number" asp-for="cupo" class="form-control" autocomplete="off" onpaste="return false">
         <span class="text-danger" asp-validation-for="cupo"></span>
     </div>
 
     <div class="col-6 form-group">
         <label asp-for="informacion">Informacion del curso: </label>
-        <textarea asp-for="informacion" class="form-control"></textarea>
+        <textarea id="informacion" asp-for="informacion" class="form-control" autocomplete="off" onpaste="return false"></textarea>
         <span class="text-danger" asp-validation-for="cupo"></span>
     </div>
 
     <div class="col-6 form-group">
         <label asp-for="precio">Precio del curso: </label>
-        <input type="number" asp-for="precio" class="form-control" step="2.5" value="0.00" pattern="^\d*(\.\d{0,2})?$">
+        <input id="precio" type="number" asp-for="precio" class="form-control" step="2.5" pattern="^\d*(\.\d{0,2})?$" autocomplete="off" onpaste="return false">
         <span class="text-danger" asp-validation-for="precio"></span>
     </div>
 
       <div class="col-6 form-group">
         <label for="file">Imagen: </label>
-        <input id="img" type="file" for="file" name="files" class="form-control"  accept="image/*" required>
+        <input id="img" type="file" for="file" name="files" class="form-control"  accept="image/*" >
     </div>
 
      <div class="col-6 form-group" >
@@ -66,9 +66,9 @@
          
          <div class="form-group">
 
-           <select class="form-control" name="profesor">
+           <select id="profesorCurso" class="form-control" name="profesor">
 
-               <option selected disabled>Seleccione el profesor del curso...</option>
+               <option selected disabled value="">Seleccione el profesor del curso...</option>
 
                @foreach (var item in usuarios)
                {
@@ -94,14 +94,211 @@
 
     <br />
 
-    <button class="btn btn-primary">Registrar Curso</button>
+    <button id="registrarCurso" type="submit" disabled class="btn btn-primary">Registrar Curso</button>
 </form>
 
 @section Scripts {
 
     <script text="text/javascript">
-      
+         
+         const formualrio = document.getElementById('formualrio');
+         const nombre = document.getElementById('nombre');
+         const fechaInicio = document.getElementById('fechaInicio');
+         const fechaFin = document.getElementById('fechaFin');
+         const horario = document.getElementById('horario');
+         const cupo = document.getElementById('cupo');
+         const informacion = document.getElementById('informacion');
+         const precio = document.getElementById('precio');
+         const profesorCurso = document.getElementById('profesorCurso');
          const imagenRender = document.getElementById('img');
+         const registrarCurso = document.getElementById('registrarCurso');
+
+
+         /*window.addEventListener('load' , () => {
+              
+                var fecha = new Date();
+                var anio = fecha.getFullYear();
+                var dia = fecha.getDate();
+                var _mes = fecha.getMonth();
+                _mes = _mes + 1;
+
+                if (_mes < 10)
+                { var mes = "0" + _mes;}
+                else
+                { var mes = _mes.toString;}
+                
+                if (dia < 10)
+                { var dia = "0" + dia;}
+                else
+                { var dia = dia.toString;}
+              
+                var fechaActual = anio + "-" + mes + "-" + dia;
+                fechaInicio.setAttribute('min', fechaActual);
+                fechaFin.setAttribute('min', fechaActual);
+         })*/
+
+         nombre.addEventListener('input' , () => {
+               
+                habilitarBotonCurso();
+         })
+
+        fechaInicio.addEventListener('change' , () => {
+                
+                    habilitarBotonCurso();
+        })
+
+        fechaFin.addEventListener('change' , () => {
+                
+                    habilitarBotonCurso();
+         })
+
+        horario.addEventListener('input' , () => {
+                
+                    habilitarBotonCurso();
+        })
+
+        cupo.addEventListener('input' , () => {
+                
+                    habilitarBotonCurso();
+        })
+
+        informacion.addEventListener('input' , () => {
+                
+                    habilitarBotonCurso();
+        })
+
+        precio.addEventListener('input' , () => {
+                
+                    habilitarBotonCurso();
+        })
+
+        profesorCurso.addEventListener('change' , () => {
+                
+                    habilitarBotonCurso();
+        })
+        
+        
+        formualrio.addEventListener('submit' , (e) => {
+                
+                e.preventDefault();
+
+                 if(nombre.value.trim() != '' && fechaInicio.value != '' && fechaFin.value != '' && horario.value.trim() != '' && cupo.value != '' && informacion.value.trim() != '' && precio.value != '' && profesorCurso.value != '' && imagenRender.value != ''){
+                  
+                  if(precio.value > 0 && cupo.value > 0){
+                        
+                        const fechaHoy = new Date();
+                        console.log(fechaHoy);
+                        const añoHoy = fechaHoy.getFullYear();
+                        const fechaIni = new Date(fechaInicio.value);
+                        console.log(fechaIni);
+                        const fechaFi = new Date(fechaFin.value);
+                      
+                          if(fechaIni >= fechaHoy &&  fechaFi >= fechaHoy){
+
+                               if(fechaFi < fechaIni){
+                                     
+                                       registrarCurso.disabled = true;
+                                       sweetAlertErrotMesage('La fecha de inicio no puede ser mayor a la fecha de fin');
+                                
+                                }else{
+                                     
+                                      registrarCurso.disabled = false;
+                                      Swal.fire({
+                                          title: '¿Esta seguro de registrar el curso?',
+                                          text: "¡Fijate si todos los datos son correctos!",
+                                          type: 'warning',
+                                          showCancelButton: true,
+                                          confirmButtonColor: '#3085d6',
+                                          cancelButtonColor: '#d33',
+                                          confirmButtonText: '¡Si, registrar curso!',
+                                          cancelButtonText: '¡No, cancelar!',
+                                      }).then((result) => {
+                                          if (result.value) {
+                                              formualrio.submit();
+                                          }
+                                      })
+                                     
+                                }
+                               
+                              
+                          }else {
+
+                                registrarCurso.disabled = true;
+                                sweetAlertErrotMesage('La fecha de inicio y fin del curso no puede ser menor a la fecha actual');
+                          }
+                          
+
+                    }else{
+
+                        registrarCurso.disabled = true;
+                        sweetAlertErrotMesage('El precio y el cupo deben ser mayores a 0');
+
+                    }
+
+                
+
+            }else{
+               
+                registrarCurso.disabled = true;
+                sweetAlertErrotMesage('Por favor complete todos los campos');
+            }
+
+
+        })
+
+        const sweetAlertErrotMesage = (message) => {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: message,
+            })
+        }
+
+        const habilitarBotonCurso = () => {
+
+
+            if(nombre.value.trim() != '' && fechaInicio.value != '' && fechaFin.value != '' && horario.value.trim() != '' && cupo.value != '' && informacion.value.trim() != '' && precio.value != '' && profesorCurso.value != '' && imagenRender.value != ''){
+                  
+                  if(precio.value > 0 && cupo.value > 0){
+                        
+                        const fechaHoy = new Date();
+                        const añoHoy = fechaHoy.getFullYear();
+                        const fechaIni = new Date(fechaInicio.value);
+                        const fechaFi = new Date(fechaFin.value);
+                      
+                          if(fechaIni >= fechaHoy &&  fechaFi >= fechaHoy){
+
+                               if(fechaFi < fechaIni){
+                                     
+                                      registrarCurso.disabled = true;
+                                }
+                                else{
+                                     
+                                      registrarCurso.disabled = false;
+                                }
+                               
+                              
+                          }else {
+
+                                registrarCurso.disabled = true;
+                          }
+                          
+
+                    }else{
+
+                        registrarCurso.disabled = true;
+
+                    }
+
+                
+
+            }else{
+
+                registrarCurso.disabled = true;
+            }
+
+        }
 
           imagenRender.addEventListener('change', (e) => {
 

@@ -76,7 +76,7 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
         public string Email { get; set; }
 
         [Required(ErrorMessage ="El campo contraseña es requerido")]
-        [StringLength(100, ErrorMessage = "Las contraseñas deben tener una letra mayuscula otra minuscula y un caracter especial", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "Las contraseñas deben tener una letra mayuscula otra minuscula, un caracter especial un digito y minimo debe ser de 6 digitos", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Contraseña:")]
             public string Password { get; set; }
@@ -145,7 +145,18 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
                     if(error.Code == "DuplicateUserName")
                     {
                         ModelState.AddModelError(string.Empty, "El correo ya esta registrado");
+                    }else if(error.Code == "PasswordRequiresNonAlphanumeric")
+                    {
+                        ModelState.AddModelError(string.Empty, "La contraseña debe tener al menos una letra mayuscula, una minuscula y un caracter especial");
+                    
+                    }else if(error.Code == "PasswordRequiresDigit"){
+
+                        ModelState.AddModelError(string.Empty, "La contraseña debe tener al menos un digito");
+                    }else if(error.Code == "PasswordRequiresUpper"){
+
+                        ModelState.AddModelError(string.Empty, "La contraseña debe tener al menos una letra mayuscula");
                     }
+
                     else
                     {
                         ModelState.AddModelError(string.Empty, error.Description);

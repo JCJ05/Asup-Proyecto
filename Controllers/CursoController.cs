@@ -101,7 +101,7 @@ namespace Repaso_Net.Controllers {
 
             }
 
-        
+            
 
              var usuarios = _userManager.GetUsersInRoleAsync("profesor").Result;
              ViewBag.items = usuarios;
