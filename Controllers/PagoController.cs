@@ -264,7 +264,7 @@ namespace Asup_Proyecto.Controllers
             ";
 
             cabecera += footer; 
-            sendBoletaToClient(cabecera , usuario.Email);
+            //sendBoletaToClient(cabecera , usuario.Email);
 
         
         GlobalSettings globalSettings = new GlobalSettings();

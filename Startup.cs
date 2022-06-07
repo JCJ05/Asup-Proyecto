@@ -37,7 +37,7 @@ namespace Repaso_Net
             services.AddDatabaseDeveloperPageExceptionFilter();
 
         
-            services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<Usuario>(options => options.SignIn.RequireConfirmedAccount = false)
             .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

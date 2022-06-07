@@ -60,7 +60,7 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
                     protocol: Request.Scheme);
             }
 
-                        string servidor = "smtp.gmail.com";
+                       /* string servidor = "smtp.gmail.com";
                         int puerto = 587;
 
                         string GmailUser = "asupempresas@gmail.com";
@@ -87,7 +87,7 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
                         cliente.Connect(servidor, puerto, MailKit.Security.SecureSocketOptions.StartTls);
                         cliente.Authenticate(GmailUser, GmailPass);
                         cliente.Send(message);
-                        cliente.Disconnect(true);
+                        cliente.Disconnect(true);*/
 
          
                        ViewData["email"] = email;

@@ -43,11 +43,11 @@ namespace Repaso_Net.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "El campo email es obligatorio")]
+            [EmailAddress(ErrorMessage = "El email ingresado no es un email valido")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "El campo contraseña es obligatorio")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
