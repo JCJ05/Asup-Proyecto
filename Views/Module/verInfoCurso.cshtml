@@ -336,62 +336,70 @@
 
         e.preventDefault();
 
-        const btnSubmit = document.getElementById('btnSubmit');
-        btnSubmit.disabled = true;
+        if(archivosFile.length == 0){
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No has seleccionado ningun archivo!',
+              })
+        }else{
 
-        const titulo = document.getElementById('titulo').value;
-        const subtitulo = document.getElementById('subtitulo').value;
-        const link = document.getElementById('link').value;
-        const cursoId = @Model.Id;
-        const moduloId = @idSeccion;
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
 
-        console.log(archivosFile);
-      
-        const formData = new FormData();
-        formData.append('titulo', titulo);
-        formData.append('subtitulo', subtitulo);
-        formData.append('link', link);
-        formData.append('cursoId', cursoId);
-        formData.append('moduloId', moduloId);
-       
-        archivosFile.forEach(function(file) {
-            formData.append('archivos', file);
-        });
-       
-         Swal.fire({
-            title: 'Enviando archivo a la base de datos',
-            text: 'Espere por favor',
-            onBeforeOpen: () => {
-              Swal.showLoading()
-            }
+            const titulo = document.getElementById('titulo').value;
+            const subtitulo = document.getElementById('subtitulo').value;
+            const link = document.getElementById('link').value;
+            const cursoId = @Model.Id;
+            const moduloId = @idSeccion;
+
+            console.log(archivosFile);
+        
+            const formData = new FormData();
+            formData.append('titulo', titulo);
+            formData.append('subtitulo', subtitulo);
+            formData.append('link', link);
+            formData.append('cursoId', cursoId);
+            formData.append('moduloId', moduloId);
+        
+            archivosFile.forEach(function(file) {
+                formData.append('archivos', file);
+            });
+        
+            Swal.fire({
+                title: 'Enviando archivo a la base de datos',
+                text: 'Espere por favor',
+                onBeforeOpen: () => {
+                Swal.showLoading()
+                }
+                })
+                    
+            fetch('/Module/saveArchivos' , {
+                method: 'POST',
+                body: formData
             })
-                   
-        fetch('/Module/saveArchivos' , {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            const {mensaje} = data;
-            if(mensaje){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Exito!',
-                    text: 'Seccion agregada con exito!',
-                  })
-                  .then(() => {
-                    window.location.href = `/Module/verInfoCurso/@Model.Id?idmodulo=@idSeccion`;
-                  });
-            }else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Algo salio mal!',
-                  })
-            }
-        })
+            .then(res => res.json())
+            .then(data => {
+                const {mensaje} = data;
+                if(mensaje){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Exito!',
+                        text: 'Seccion agregada con exito!',
+                    })
+                    .then(() => {
+                        window.location.href = `/Module/verInfoCurso/@Model.Id?idmodulo=@idSeccion`;
+                    });
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Algo salio mal!',
+                    })
+                }
+            })
 
-       
+        }
         
     });
 
