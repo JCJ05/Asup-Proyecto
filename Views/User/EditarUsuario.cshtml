@@ -38,7 +38,7 @@
 
       <div class="col-6 form-group">
         <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" id="email" disabled autocomplete="off" onpaste="return false" />
+        <input asp-for="Email" class="form-control" id="email" autocomplete="off" onpaste="return false" />
         <span asp-validation-for="Email" class="text-danger"></span>
       </div>
 
@@ -75,7 +75,7 @@
               habilitarBoton();
         })
 
-        emailValidacion.addEventListener('change'  , () => {
+        emailValidacion.addEventListener('input'  , () => {
              
               habilitarBoton();
         })
@@ -126,14 +126,48 @@
               if (result.value) {
                  
                   btnEditar.disabled = true;
-                  editarUsuario();
-                        
+                  validarEmail();
+                     
               }
 
             })
 
        
        
+       }
+
+       const validarEmail = async() => {
+            
+            let mensaje = '';
+
+            const url = `https://localhost:5001/api/usuarios?email=${emailValidacion.value}`
+            const response = await fetch(url ,{
+             method: 'PUT',
+             headers: {
+                'Content-Type': 'application/json'
+            },
+            })
+
+            if(response.ok){
+ 
+                const data = await response.json();
+                mensaje = data.mensaje;
+
+                if(mensaje == 'Email Encontrado'){
+                   
+                     swalMessageError('El email ya existe');
+
+                }else{
+
+                      editarUsuario();
+
+                }
+               
+            }else{
+               
+                swalMessageError('Error al validar el email');
+            }
+
        }
 
        const editarUsuario = async() => {

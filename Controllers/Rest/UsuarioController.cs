@@ -31,14 +31,25 @@ namespace Repaso_Net.Controllers.Rest
         [HttpPut]
         public async Task<ActionResult<String>> validateEmail(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-               return new JsonResult(new { mensaje = "Email no encontrado" });
-            }
-            else
-            {
-              return new JsonResult(new { mensaje = "Email Encontrado" });
+            var usuario =  _userManager.GetUserAsync(User).Result;
+            
+            if(usuario != null && usuario.Email == email){
+                
+                 return new JsonResult(new { mensaje = "Email no encontrado" });
+
+            }else{
+
+                var user = await _userManager.FindByEmailAsync(email);
+                
+                if (user == null)
+                {
+                return new JsonResult(new { mensaje = "Email no encontrado" });
+                }
+                else
+                {
+                return new JsonResult(new { mensaje = "Email Encontrado" });
+                }
+
             }
         }
 
