@@ -1,0 +1,329 @@
+@model Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+
+<div class="container">
+<form id="formulario" class="row g-2">
+  
+      <div class="col-12 form-group">
+        <label asp-for="identificacion">Identificacion: </label>
+        <input id="dni" type="text" asp-for="identificacion" class="form-control" autocomplete="off" onpaste="return false">
+        <span class="text-danger" asp-validation-for="identificacion"></span>
+        <span id="validacion" class="text-success"></span>
+        <span id="error" class="text-error"></span>
+     </div>
+
+     <div class="col-6 form-group">
+        <label asp-for="nombres">Nombres: </label>
+        <input disabled id="nombre" asp-for="nombres" class="form-control" autocomplete="off" onpaste="return false" />
+        <span asp-validation-for="nombres" class="text-danger"></span>
+     </div>
+
+      <div class="col-6 form-group">
+        <label asp-for="apellidos"></label>
+        <input disabled id="apellido"  asp-for="apellidos" class="form-control" autocomplete="off" onpaste="return false" />
+        <span asp-validation-for="apellidos" class="text-danger"></span>
+      </div>
+           
+      <div class="col-6 form-group">
+        <label asp-for="direccion"></label>
+        <input asp-for="direccion" id="direccion" class="form-control" autocomplete="off" onpaste="return false" />
+        <span asp-validation-for="direccion" class="text-danger"></span>
+      </div>
+
+      <div class="col-6 form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" id="email" disabled autocomplete="off" onpaste="return false" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+      </div>
+
+       <button id="btnEditar" type="submit" class="btn btn-primary">Editar</button>
+
+</form>
+
+</div>
+
+@section Scripts {
+  
+   <script text="text/javascript">
+
+       const dniValidacion = document.getElementById('dni');
+       const nombreValidacion = document.getElementById('nombre');
+       const apellidoValidacion = document.getElementById('apellido');
+       const direccionValidacion = document.getElementById('direccion');
+       const emailValidacion = document.getElementById('email');
+       const btnEditar = document.getElementById('btnEditar');
+       const formEditar = document.getElementById('formulario');
+
+         nombreValidacion.addEventListener('change'  , () => {
+             
+              habilitarBoton();
+        })
+
+        apellidoValidacion.addEventListener('change'  , () => {
+             
+              habilitarBoton();
+        })
+
+        direccionValidacion.addEventListener('input'  , () => {
+             
+              habilitarBoton();
+        })
+
+        emailValidacion.addEventListener('change'  , () => {
+             
+              habilitarBoton();
+        })
+
+       dniValidacion.addEventListener('input' , (e) => {
+                       
+              const dni = e.target.value;
+
+               habilitarBoton();
+
+              if(dni.length == 8){
+                 verificarDni();
+              }
+
+            
+       });
+
+       formEditar.addEventListener('submit' , (e) => {
+              e.preventDefault();
+
+             if(dniValidacion.value.length == 8 && nombreValidacion.value != '' && apellidoValidacion.value != '' && direccionValidacion.value != '' && emailValidacion.value != ''){
+                 
+                  
+                   consultarUsuario();
+             
+
+            }else {
+
+                btnEditar.disabled = true;
+                swalMessageError('Todos los campos son obligatorios');
+
+            }
+       
+       });
+
+       const consultarUsuario = () => {
+              
+            Swal.fire({
+              title: '¿Está seguro de editar tu usuario?',
+              text: "¡No podrás revertir esto!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: '¡Si, editar!',
+              cancelButtonText: 'Cancelar'
+            }).then((result) => {
+              if (result.value) {
+                 
+                  btnEditar.disabled = true;
+                  editarUsuario();
+                        
+              }
+
+            })
+
+       
+       
+       }
+
+       const editarUsuario = async() => {
+              
+              const formData = new FormData();
+              formData.append('dni', dniValidacion.value);
+              formData.append('nombres', nombreValidacion.value);
+              formData.append('apellidos', apellidoValidacion.value);
+              formData.append('direccion', direccionValidacion.value);
+              formData.append('email', emailValidacion.value);
+
+              const response = await fetch('/User/EditarUser', {
+                method: 'POST',
+                body: formData
+              });
+
+              if(response.ok){
+                const data = await response.json();
+               
+                  swalMessageSuccess(data.mensaje);
+                  
+              }else {
+
+                  swalMessageError('Error al editar el usuario');
+              }
+       
+       }
+
+       const swalMessageSuccess = (message) => {
+              Swal.fire({
+                title: '¡Éxito!',
+                text: message,
+                icon: 'success',
+                confirmButtonText: 'Aceptar'
+              }).then ((result) => {
+                if(result.value){
+                  location.href = '/';
+                }
+              })
+       }
+
+       const swalMessageError = (mensaje) => {
+           
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: mensaje,
+              })
+
+       }
+
+       const habilitarBoton = () => {
+               
+           if(dniValidacion.value.length == 8 && nombreValidacion.value != '' && apellidoValidacion.value != '' && direccionValidacion.value != '' && emailValidacion.value != ''){
+              
+                  btnEditar.disabled = false;
+
+            }else {
+
+                btnEditar.disabled = true;
+
+            }
+
+       }
+
+       function valideKey(evt){
+
+			var code = (evt.which) ? evt.which : evt.keyCode;
+            
+			
+			if(code>=48 && code<=57) { 
+                
+                 const dni = document.getElementById('dni').value;   
+                 cont = dni.length;
+            
+                if(cont>=8){
+
+                    return false;
+
+                }
+
+			  return true;
+
+			} else{       
+
+			  return false;
+
+			}
+		}
+
+        function verificarDni(){
+
+        
+           const dni = document.getElementById('dni').value;
+           const token = 'a78b32a30ec3f14372756e7e28af90b8adf168a839da4b81ddb8f9ab02d9ab96';
+           const validacion = document.getElementById('validacion');
+           const error = document.getElementById('error');
+           const btn = document.getElementById('btnRegistrar');
+           const nombre = document.getElementById('nombre');
+           const apellido = document.getElementById('apellido');
+           let mensajeValidar = '';
+           
+
+           if(dni){
+
+               console.log(dni.length , dni);
+              
+              if(dni.length == 8){
+
+                  
+                 
+                 const url = `https://apiperu.dev/api/dni/${dni}`;
+
+                 fetch(url , {
+                     method: 'GET',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'Authorization': 'Bearer ' + token,
+                     }
+                 })
+                    .then(response => response.json())
+                    .then(result => {
+                         
+                        console.log(result);
+                        const {success} = result;
+                        
+                        
+                        if(success){
+
+                             const {data} = result;
+                             const {nombres , apellido_paterno , apellido_materno} = data;
+                            
+                             const url = `https://localhost:5001/api/usuarios?dni=${dniValidacion.value}`;
+                                        fetch(url ,{
+                                            method: 'DELETE',
+                                            headers: {
+                                                'Content-Type': 'application/json'
+                                            },
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+
+                                            const {mensaje} = data;
+                                            console.log(mensaje);
+                                            mensajeValidar = mensaje;
+
+                                            if(mensajeValidar == 'DNI encontrado'){
+
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Oops...',
+                                                text: 'El DNI ya se encuentra registrado!',
+                                            })
+
+                                              dniValidacion.value = '';
+                                              nombreValidacion.value = '';
+                                              apellidoValidacion.value = '';
+                                              validacion.innerHTML = '';
+                                              return;
+                                             }
+                                        })
+                                         
+                                            error.innerHTML = '';
+                                            validacion.innerHTML = 'DNI validado';
+                                            nombre.value = nombres;
+                                            apellido.value = apellido_paterno + ' ' + apellido_materno;
+                            
+                        }else {
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'El DNI no es valido!',
+                            })
+                            
+                            validacion.innerHTML = '';
+                            error.innerHTML = 'DNI no validado';
+                            btn.disabled = true;
+                            
+                        }
+ 
+                    })
+
+              }
+
+           }
+           
+
+        }
+
+   </script>
+
+}

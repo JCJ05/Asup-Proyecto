@@ -44,16 +44,27 @@ namespace Repaso_Net.Controllers.Rest
 
         [HttpDelete]
         public async Task<ActionResult<String>> validateDni(string dni)
-        {
-              var user = await  _context.DataUsuarios.Where(x => x.identificacion == dni).FirstOrDefaultAsync();
+        {     
 
-                if (user == null)
-                {
+                var usuario =  _userManager.GetUserAsync(User).Result;
+                 
+                if(usuario != null && usuario.identificacion == dni){
+                    
                     return new JsonResult(new { mensaje = "DNI no encontrado" });
-                }
-                else
-                {
-                    return new JsonResult(new { mensaje = "DNI encontrado" });
+                    
+                }else{
+
+                    var user = await  _context.DataUsuarios.Where(x => x.identificacion == dni).FirstOrDefaultAsync();
+
+                    if (user == null)
+                    {
+                        return new JsonResult(new { mensaje = "DNI no encontrado" });
+                    }
+                    else
+                    {
+                        return new JsonResult(new { mensaje = "DNI encontrado" });
+                    }
+
                 }
 
         }
