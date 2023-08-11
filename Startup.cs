@@ -32,7 +32,7 @@ namespace Repaso_Net
         {
              services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection"), builder => {
+                    Environment.GetEnvironmentVariable("ASUP_CONNECTION"), builder => {
                         builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                     }));
             services.AddDatabaseDeveloperPageExceptionFilter();
