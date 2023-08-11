@@ -77,6 +77,11 @@ namespace Repaso_Net.Controllers.Rest
            
         }
 
+        [HttpGet]
+        [Route("Test")]
+        public IActionResult Test(){
+            return Ok(_context.DataCursos.ToList());
+        }
     
     }
 }

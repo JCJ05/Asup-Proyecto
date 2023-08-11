@@ -12,7 +12,6 @@ using Repaso_Net.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 using DinkToPdf.Contracts;
 using DinkToPdf;
 using Repaso_Net.Models;
@@ -32,8 +31,10 @@ namespace Repaso_Net
         public void ConfigureServices(IServiceCollection services)
         {
              services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseNpgsql(
-                    Configuration.GetConnectionString("PostgressConnection")));
+                    options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection"), builder => {
+                        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                    }));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
         
