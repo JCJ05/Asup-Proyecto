@@ -18,6 +18,7 @@ using MailKit;
 using MimeKit;
 using Repaso_Net.Models;
 using Repaso_Net.Data;
+using IronPdf;
 
 namespace Asup_Proyecto.Controllers
 {
@@ -71,7 +72,7 @@ namespace Asup_Proyecto.Controllers
                    var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
                    var montototal = proformas.Sum(c => c.curso.precio);
 
-                   //var boleta = GeneratePdfReport(proformas);
+                   var boleta = GeneratePdfReport(proformas);
 
                    pago.NombreTarjeta = tipoTarjeta;
                    pago.Status = "Realizado";                   
@@ -85,7 +86,7 @@ namespace Asup_Proyecto.Controllers
                    compra.usuario = user.Result;
                    compra.Total = pago.monto;
                    compra.Pago = pago;
-                   //compra.boleta = boleta;
+                   compra.boleta = boleta;
                    _context.Add(compra);
 
                    List<DetalleCompra> detalles = new List<DetalleCompra>();
@@ -266,37 +267,10 @@ namespace Asup_Proyecto.Controllers
             cabecera += footer; 
             //sendBoletaToClient(cabecera , usuario.Email);
 
-        
-        GlobalSettings globalSettings = new GlobalSettings();
-        globalSettings.ColorMode = ColorMode.Color;
-        globalSettings.Orientation = Orientation.Portrait;
-        globalSettings.PaperSize = PaperKind.A4;
-        globalSettings.Margins = new MarginSettings { Top = 25, Bottom = 25 };
-        ObjectSettings objectSettings = new ObjectSettings();
-        objectSettings.PagesCount = true;
-        objectSettings.HtmlContent = cabecera;
-        WebSettings webSettings = new WebSettings();
-        webSettings.DefaultEncoding = "utf-8";
-        HeaderSettings headerSettings = new HeaderSettings();
-        headerSettings.FontSize = 18;
-        headerSettings.FontName = "Ariel";
-        headerSettings.Right = "Boleta Electronica";
-        headerSettings.Line = true;
-        FooterSettings footerSettings = new FooterSettings();
-        footerSettings.FontSize = 18;
-        footerSettings.FontName = "Ariel";
-        footerSettings.Center = "Este recibo sirve para cualquier reclamo";
-        footerSettings.Line = true;
-        objectSettings.HeaderSettings = headerSettings;
-        objectSettings.FooterSettings = footerSettings;
-        objectSettings.WebSettings = webSettings;
-        HtmlToPdfDocument htmlToPdfDocument = new HtmlToPdfDocument()
-        {
-            GlobalSettings = globalSettings,
-            Objects = { objectSettings },
-        };
+        var renderer = new ChromePdfRenderer();
+        var pdfDocument = renderer.RenderHtmlAsPdf(cabecera);
 
-        return _converter.Convert(htmlToPdfDocument);
+        return pdfDocument.BinaryData;
 
       }
 
