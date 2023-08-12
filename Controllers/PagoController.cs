@@ -71,7 +71,7 @@ namespace Asup_Proyecto.Controllers
                    var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
                    var montototal = proformas.Sum(c => c.curso.precio);
 
-                   var boleta = GeneratePdfReport(proformas);
+                   //var boleta = GeneratePdfReport(proformas);
 
                    pago.NombreTarjeta = tipoTarjeta;
                    pago.Status = "Realizado";                   
@@ -85,7 +85,7 @@ namespace Asup_Proyecto.Controllers
                    compra.usuario = user.Result;
                    compra.Total = pago.monto;
                    compra.Pago = pago;
-                   compra.boleta = boleta;
+                   //compra.boleta = boleta;
                    _context.Add(compra);
 
                    List<DetalleCompra> detalles = new List<DetalleCompra>();
