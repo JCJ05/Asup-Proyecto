@@ -19,6 +19,8 @@ using MimeKit;
 using Repaso_Net.Models;
 using Repaso_Net.Data;
 using IronPdf;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace Asup_Proyecto.Controllers
 {
@@ -64,7 +66,7 @@ namespace Asup_Proyecto.Controllers
         
         [Authorize(Roles = "profesor,alumno")]
         [HttpPost]
-        public IActionResult IndexPago(Pago pago , string tipoTarjeta){
+        public async Task<IActionResult> IndexPago(Pago pago , string tipoTarjeta){
               
               if(ModelState.IsValid){
 
@@ -72,7 +74,7 @@ namespace Asup_Proyecto.Controllers
                    var proformas = _context.DataProformas.Include(p => p.curso).Where(p => p.usuario.Id == user.Result.Id && p.Status.Equals("Pendiente")).ToList();
                    var montototal = proformas.Sum(c => c.curso.precio);
 
-                   var boleta = GeneratePdfReport(proformas);
+                   var boleta = await GeneratePdfReport(proformas);
 
                    pago.NombreTarjeta = tipoTarjeta;
                    pago.Status = "Realizado";                   
@@ -172,7 +174,7 @@ namespace Asup_Proyecto.Controllers
 
         }
 
-        public byte[] GeneratePdfReport(List<Proforma> proformas)
+        public async Task<byte[]> GeneratePdfReport(List<Proforma> proformas)
     {   
 
             var total = proformas.Sum(c => c.curso.precio);
@@ -265,7 +267,7 @@ namespace Asup_Proyecto.Controllers
             ";
 
             cabecera += footer; 
-            //sendBoletaToClient(cabecera , usuario.Email);
+           await sendBoletaToClient(cabecera , usuario.Email);
 
         var renderer = new ChromePdfRenderer();
         var pdfDocument = renderer.RenderHtmlAsPdf(cabecera);
@@ -274,14 +276,14 @@ namespace Asup_Proyecto.Controllers
 
       }
 
-      public void sendBoletaToClient(string html , string email){
+      public async Task sendBoletaToClient(string html , string email){
        
          
-         string servidor = "smtp.gmail.com";
+         string servidor = "smtp-relay.sendinblue.com";
          int puerto = 587;
           
-         string GmailUser = "asupempresas@gmail.com";
-         string GmailPass = "revels321";
+         string GmailUser = "julio_aguero0501@outlook.com";
+         string GmailPass = "ML2HW379Tjvk4pY6";
 
          string receptor = email;
 
@@ -302,6 +304,18 @@ namespace Asup_Proyecto.Controllers
          cliente.Authenticate(GmailUser, GmailPass);
          cliente.Send(message);
          cliente.Disconnect(true);
+
+           /* var apiKey = "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";
+            var clientes = new SendGridClient(apiKey);
+            var from = new EmailAddress("fmarangon43@gmail.com", "Asup");
+            var subject = "Confirmacion de compra";
+            var to = new EmailAddress(email);
+            var plainTextContent = "Gracias por confiar en nosotros";
+            var htmlContent = html;
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = await clientes.SendEmailAsync(msg);
+
+            Console.WriteLine(response.StatusCode);*/
 
 
       }
@@ -411,7 +425,7 @@ namespace Asup_Proyecto.Controllers
             pagos.Status = "Realizado";
             _context.Update(pagos);
 
-            var boleta = GeneratePdfReport(proformas);
+            var boleta = await GeneratePdfReport(proformas);
 
             Compra compra = new Compra();
             compra.usuario = _context.DataUsuarios.Find(pagos.usuario.Id);
