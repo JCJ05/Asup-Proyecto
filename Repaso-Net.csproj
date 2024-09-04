@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>aspnet-Repaso_Net-87C06AD2-8C98-4A75-90E5-1C01A2ECBB16</UserSecretsId>
     <RootNamespace>Repaso_Net</RootNamespace>
   </PropertyGroup>
@@ -12,16 +12,19 @@
 
   <ItemGroup>
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
-    <PackageReference Include="IronPdf" Version="2023.8.6" />
-    <PackageReference Include="MailKit" Version="4.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.14" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.14" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.14" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.14" />
-    <PackageReference Include="SendGrid" Version="9.28.1" />
+    <PackageReference Include="IronPdf" Version="2024.8.3" />
+    <PackageReference Include="MailKit" Version="4.7.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
   </ItemGroup>
 
 </Project>
