@@ -30,9 +30,12 @@ namespace Repaso_Net
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+             
+             var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
              services.AddDbContext<ApplicationDbContext>(options =>
                     options.UseSqlServer(
-                    Environment.GetEnvironmentVariable("ASUP_CONNECTION"), builder => {
+                     connectionString , builder => {
                         builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                     }));
             services.AddDatabaseDeveloperPageExceptionFilter();
